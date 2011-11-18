@@ -1,0 +1,10 @@
+Possible Strategies
+
+- Explore the Board.
+
+
+If the exploration is complete OR the exit is spotted by both
+- find the shortest path for both both.
+- Take the steps that takes you closer
+  to the exit, for both the players.
+
