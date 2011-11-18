@@ -7,8 +7,9 @@ public class Info {
 	int aintLocalViewR [][] = new int [3][3];
 	
 	//Global Views for both the boards
-	int aintGlobalViewL [][]= new int [3][3];
-	int aintGlobalViewR [][]= new int [3][3];
+		static int aintGlobalViewL [][]= new int [200][200];
+		static int aintGlobalViewR [][]= new int [200][200];
+	
 	
 	/*
 	 * This method checks if the board has been explored
@@ -24,7 +25,17 @@ public class Info {
 	 * This method checks if the exit has been spotted.
 	 */
 	public boolean isExitSpotted (char side){
-		
+		int tempLocalView[][] = new int [3][3];
+		if (side =='l'){
+			tempLocalView = aintLocalViewL;
+		}else
+			if (side == 'r'){
+				tempLocalView = aintLocalViewR;
+			}
+		for (int i =0; i<tempLocalView.length ;i++)
+			for(int j=0;j<tempLocalView[i].length ;j++)
+				if (aintLocalViewL[i][j] == 2)
+					return true;
 		return false;
 	}
 	

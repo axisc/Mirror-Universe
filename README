@@ -46,3 +46,16 @@ So in this case, we can't make diagonal movements, to reduce the skew.
 ------------------------------------------------------------------------
 
 
+
+-------------------------------CLASS Structure----------------------------
+
+Strategy.java - holds diff methods -Explore, Reduce Skew, Approach Exit
+
+Player.java - holding 2 static arrays of size 200x200 - 
+	      initialize 2 different arrays.
+	      4 - havent seen it yet 
+	      3	- Your Current Position
+	      2	- Exit
+	      1	- Obstacle/Wall
+
+--------------------------------------------------------------------------
