@@ -8,3 +8,41 @@ If the exploration is complete OR the exit is spotted by both
 - Take the steps that takes you closer
   to the exit, for both the players.
 
+
+
+Maps
+- 1 big 
+  no obstacles (Blank Map)
+  Exits on different corners
+  
+	We want to see if they can possibly exit on the same move OR
+	will it take a minimum of D turns.
+
+-1 Big 
+   1 long wall in the middle of the map, having size d-2.
+
+-1 small board
+   Like the Checkers Board - allow only Diagonal movements.
+
+
+------------------------INTERESTING MAP--------------------------------
+	    1 large map, that limits Diagonal movement
+	    1 small map that only allows orthogonal movement - 
+	      making the exit just a few steps away
+	    
+So in this case, we can't make diagonal movements, to reduce the skew.
+-----------------------------------------------------------------------
+
+
+-------------------------Strategies-------------------------------------
+
+1. Explore.
+   -Backtrack when there is nothing else to see.
+   -Take the spiral path.
+   
+2.Approach Exit.
+  -Do this once both of them have seen their exit.
+
+------------------------------------------------------------------------
+
+
