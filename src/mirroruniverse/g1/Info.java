@@ -1,19 +1,34 @@
 package mirroruniverse.g1;
 
+import mirroruniverse.g1.Direction;
+
 public class Info {
 
 	//Local Views for both the boards
-	int aintLocalViewL [][] = new int [3][3];
-	int aintLocalViewR [][] = new int [3][3];
+	static int aintLocalViewL [][] ;
+	static int aintLocalViewR [][] ;
+
 	
 	//Global Views for both the boards
-		static int aintGlobalViewL [][]= new int [200][200];
-		static int aintGlobalViewR [][]= new int [200][200];
-	
+		static int aintGlobalViewL [][];
+		static int aintGlobalViewR [][];
 	
 	/*
+	 * Default Constructor
+	 */
+		public Info (){
+			aintGlobalViewL = new int [200][200];
+			aintGlobalViewR = new int [200][200];
+			
+			aintLocalViewL = new int [3][3];
+			aintLocalViewR = new int [3][3];
+		}
+		
+	/*
 	 * This method checks if the board has been explored
-	 * completely.
+	 * completely. 
+	 * This can be checked by hunting for an array of size 100x100
+	 * that doesn't contain a value '4' for any of the squares.
 	 */
 	public boolean isExplorationComplete(char side){
 		
@@ -22,7 +37,9 @@ public class Info {
 	
 	
 	/*
-	 * This method checks if the exit has been spotted.
+	 * This method checks if the exit has been spotted
+	 * in the local view of the player specified.
+	 * It takes a character 'side' as the parameter.
 	 */
 	public boolean isExitSpotted (char side){
 		int tempLocalView[][] = new int [3][3];
@@ -34,7 +51,7 @@ public class Info {
 			}
 		for (int i =0; i<tempLocalView.length ;i++)
 			for(int j=0;j<tempLocalView[i].length ;j++)
-				if (aintLocalViewL[i][j] == 2)
+				if (tempLocalView[i][j] == 2)
 					return true;
 		return false;
 	}
@@ -71,5 +88,13 @@ public class Info {
 		else if (side == 'l'){
 			this.aintLocalViewL = tempLocalView;
 		}
+	}
+	
+	/*
+	 * We call this method once the exits on both the maps 
+	 * have been spotted.
+	 */
+	public void aStar(int [][] localView){
+		
 	}
 }
