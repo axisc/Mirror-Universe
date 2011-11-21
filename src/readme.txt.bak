@@ -1,0 +1,5 @@
+please add ./lib to build path. It includes JgraphT which will be needed for graph algorithms.
+
+Right now the player assumes full view and there exist a path to exit at the same time.
+
+Two maps 

@@ -16,7 +16,11 @@ public class g1Player_new implements Player {
 		int lastXMove = -1;
 	    int lastYMove = -1;
 	    int intDeltaX = 0, intDeltaY = 0;
-	
+	    int skew = 2;
+	    Info.initInfo();
+	    
+	    Info.updateGlobalView('l', aintViewL, intDeltaX, intDeltaY);
+	    Info.updateGlobalView('r', aintViewR, intDeltaX, intDeltaY);
 	    Info.updateLocalView('l', aintViewL);
 	    Info.updateLocalView('r', aintViewR);
 	    
@@ -46,37 +50,36 @@ public class g1Player_new implements Player {
 	            if(aintViewL[aintViewL.length / 2 + lastYMove][aintViewL.length / 2 + lastXMove] == 1 || rdmTemp.nextInt( 5 ) == 4){
 	                //favor diagonals
 	                do{
-	                    intDeltaX = rdmTemp.nextInt(5) - 2;
-	                    if(intDeltaX < 0)
-	                        intDeltaX = -1;
-	                    else if(intDeltaX > 0)
-	                        intDeltaX = 1;
-	                    intDeltaY = rdmTemp.nextInt(5) - 2;
-	                    if(intDeltaY < 0)
-	                        intDeltaY = -1;
-	                    else if(intDeltaY > 0)
-	                        intDeltaY = 1;
+	                    intDeltaX = rdmTemp.nextInt(5) - skew;
+	                    if(intDeltaX < 0)		intDeltaX = -1;
+	                    else if(intDeltaX > 0)	intDeltaX = 1;
+	                    
+	                    intDeltaY = rdmTemp.nextInt(5) - skew;
+	                    if(intDeltaY < 0)		intDeltaY = -1;
+	                    else if(intDeltaY > 0)	intDeltaY = 1;
+	                
 	                } while (aintViewL[ aintViewL.length / 2 + intDeltaY ][ aintViewL.length / 2 + intDeltaX ] == 1);
 	                lastXMove = intDeltaX ;
 	                lastYMove = intDeltaY;
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
+	                
 	            }
 
 			}
 			else if (!blnROver){
 	            if(aintViewR[aintViewR.length / 2 + lastYMove][aintViewR.length / 2 + lastXMove] == 1 || rdmTemp.nextInt( 5 ) == 4){
 	                do{
-	                    intDeltaX = rdmTemp.nextInt(5) - 2;
-	                    if(intDeltaX < 0)
-	                        intDeltaX = -1;
-	                    else if(intDeltaX > 0)
-	                        intDeltaX = 1;
-	                    intDeltaY = rdmTemp.nextInt(5) - 2;
-	                    if(intDeltaY < 0)
-	                        intDeltaY = -1;
-	                    else if(intDeltaY > 0)
-	                        intDeltaY = 1;
+	                    intDeltaX = rdmTemp.nextInt(5) - skew;
+	                    if(intDeltaX < 0)		intDeltaX = -1;
+	                    else if(intDeltaX > 0)	intDeltaX = 1;
+	                    
+	                    intDeltaY = rdmTemp.nextInt(5) - skew;
+	                    if(intDeltaY < 0)		intDeltaY = -1;
+	                    else if(intDeltaY > 0)	intDeltaY = 1;
+	                
 	                } while (aintViewR[ aintViewR.length / 2 + intDeltaY ][ aintViewR.length / 2 + intDeltaX ] == 1);
+	            	lastXMove = intDeltaX ;
+					lastYMove = intDeltaY;
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
 	            }
 	        }

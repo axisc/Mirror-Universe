@@ -39,6 +39,18 @@ public class Info {
 			aintLocalViewR = new int [3][3];
 		}
 		
+		public static void initInfo(){
+			aintGlobalViewL = new int [200][200];
+			aintGlobalViewR = new int [200][200];
+			
+			for ( int i=0 ; i<200 ;i++)
+				for (int j=0; j<200 ;j++)
+					aintGlobalViewL [i][j] = aintGlobalViewR[i][j] = MapData.unknown;
+			
+			aintLocalViewL = new int [3][3];
+			aintLocalViewR = new int [3][3];
+		}
+		
 	/*
 	 * This method checks if the board has been explored
 	 * completely. 
@@ -51,52 +63,22 @@ public class Info {
 	}
 	
 	
-	/*
-	 * This method checks if the exit has been spotted
-	 * in the local view of the player specified.
-	 * It takes a character 'side' as the parameter.
-	 */
-	public boolean isExitSpotted (char side){
-		int tempLocalView[][] = new int [3][3];
-		if (side =='l'){
-			tempLocalView = aintLocalViewL;
-		}else
-			if (side == 'r'){
-				tempLocalView = aintLocalViewR;
-			}
-		for (int i =0; i<tempLocalView.length ;i++)
-			for(int j=0;j<tempLocalView[i].length ;j++)
-				if (tempLocalView[i][j] == 2)
-					return true;
-		return false;
-	}
 	
 	/*
 	 * This method updates the Global View of each player.
 	 * It takes as parameter the side, and the current view
 	 * that needs to be added to the Global View
 	 */
-	public static void updateGlobalView (char side, int [][]view, boolean firstRound, Node lastMove){
-		int tempGlobalView [][];
-		if (firstRound){
-			tempGlobalView = new int [200][200];
-			
-			for ( int i=0 ; i< view.length ;i++)
-				for ( int j=0;j<view[i].length; j++)
-					tempGlobalView[i+100][j+100] = view [i][j];
-		}
-		else{
-			tempGlobalView = new int [200][200];
-			
-			for (int i=0; i<view.length; i++)
-				for (int j=0; i<view[i].length; j++)
-					tempGlobalView[i+100+lastMove.getX()][j+100+lastMove.getY()] = view [i][j];
-		}
+	public static void updateGlobalView (char side, int [][]view, int lastXMove, int lastYMove){
 		if (side == 'r'){
-			aintGlobalViewR= tempGlobalView;
+			for (int i=0; i<view.length; i++)
+				for (int j=0; j<view[i].length; j++)
+					aintGlobalViewR[i+100+lastXMove][j+100+lastYMove] = view [i][j];
 		}
 		else if (side == 'l'){
-			aintGlobalViewL = tempGlobalView;
+			for (int i=0; i<view.length; i++)
+				for (int j=0;j<view[i].length; j++)
+					aintGlobalViewL[i+100+lastXMove][j+100+lastYMove] = view [i][j];
 		}
 		
 	}
@@ -279,6 +261,75 @@ public class Info {
 				
 			path.add(minCostNode);
 		*/		
+		}while(!open.isEmpty());
+		
+		return path;
+	}
+
+public static LinkedList<Node> aStar3 (int [][] globalView ){
+		
+		Node start = scanMap(globalView, MapData.playerPosition);
+		Node exit = scanMap(globalView, MapData.exit);
+		
+		open.add(start);
+		
+		ArrayList<Node> succesors = new ArrayList<Node>();
+		LinkedList<Node> path = new LinkedList<Node>();
+		Map<Node, Double> tentCost = new HashMap<Node, Double>();
+		
+		path.add(start);
+		
+		do{
+			double min = Double.MAX_VALUE;
+			Node minCostNode = new Node(start.getX(), start.getY());
+			Node tempMin = new Node(start.getX(), start.getY());
+			
+			/*
+			 * Looking for the node in open set having the least
+			 * fvalue.
+			 */
+			for(Node m : open){
+				if(min > (gfunc(m, exit)+ hfunc(m,exit,globalView))){
+					minCostNode = m;
+					min = gfunc(m, exit)+ hfunc(m,exit,globalView);
+					}
+			}
+				open.remove(minCostNode);
+				closed.add(minCostNode);
+				tempMin = minCostNode;
+			
+	
+			boolean isBetter = true;
+			
+			if(tempMin == exit)
+				return path;
+	
+			else {
+				succesors = generateSuccessors(tempMin);
+			
+				for(Node m : succesors) {
+					if(closed.contains(m))	continue;
+					
+					if(!open.contains(m)) {
+						open.add(m);
+						tentCost.put(m, (gfunc(tempMin,exit)+ gfunc(tempMin,m)));
+					}
+				
+					if(tentCost.get(m) < gfunc(m,exit)) {
+						isBetter = true;
+					}
+					else isBetter = false;
+					
+					if(isBetter) {
+						path.add(m);
+						double f = tentCost.get(m) + hfunc(m, exit, globalView); 
+						tentCost.remove(m);
+						tentCost.put(m, f);
+					}
+						
+				}
+			}
+						
 		}while(!open.isEmpty());
 		
 		return path;
