@@ -10,6 +10,10 @@ public class Node {
 		this.y = y;
 	}
 	
+	public Node() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getX() {
 		return x;
 	}

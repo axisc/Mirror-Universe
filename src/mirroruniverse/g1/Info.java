@@ -31,6 +31,10 @@ public class Info {
 			aintGlobalViewL = new int [200][200];
 			aintGlobalViewR = new int [200][200];
 			
+			for ( int i=0 ; i<200 ;i++)
+				for (int j=0; j<200 ;j++)
+					aintGlobalViewL [i][j] = aintGlobalViewR[i][j] = MapData.unknown;
+			
 			aintLocalViewL = new int [3][3];
 			aintLocalViewR = new int [3][3];
 		}
@@ -72,14 +76,27 @@ public class Info {
 	 * It takes as parameter the side, and the current view
 	 * that needs to be added to the Global View
 	 */
-	public void updateGlobalView (char side, int [][]view){
-		int tempGlobalView [][]= new int [3][3];
-		
+	public static void updateGlobalView (char side, int [][]view, boolean firstRound, Node lastMove){
+		int tempGlobalView [][];
+		if (firstRound){
+			tempGlobalView = new int [200][200];
+			
+			for ( int i=0 ; i< view.length ;i++)
+				for ( int j=0;j<view[i].length; j++)
+					tempGlobalView[i+100][j+100] = view [i][j];
+		}
+		else{
+			tempGlobalView = new int [200][200];
+			
+			for (int i=0; i<view.length; i++)
+				for (int j=0; i<view[i].length; j++)
+					tempGlobalView[i+100+lastMove.getX()][j+100+lastMove.getY()] = view [i][j];
+		}
 		if (side == 'r'){
-			this.aintGlobalViewR= tempGlobalView;
+			aintGlobalViewR= tempGlobalView;
 		}
 		else if (side == 'l'){
-			this.aintGlobalViewL = tempGlobalView;
+			aintGlobalViewL = tempGlobalView;
 		}
 		
 	}
@@ -89,33 +106,38 @@ public class Info {
 	 * It takes as parameter the side, and the current view 
 	 * that needs to be updated.
 	 */
-	public void updateLocalView (char side, int [][] view){
+	public static  void updateLocalView (char side, int [][] view){
 		
 		int tempLocalView [][] = new int [3][3];
+		tempLocalView = view;
 		
 		if (side == 'r'){
-			this.aintLocalViewR = tempLocalView;
+			aintLocalViewR = tempLocalView;
 		}
 		else if (side == 'l'){
-			this.aintLocalViewL = tempLocalView;
+			aintLocalViewL = tempLocalView;
 		}
 	}
 	
-	public Node scanMap (int globalView[][], int x){
+	public static Node scanMap (int view[][], int x){
 		int i=0,j=0;
-		for (i= 0;i<globalView.length ; i++)
-			for (j=0 ; j<globalView[i].length ; j++)
+		Node ret = new Node();
+		for (i= 0;i<view.length ; i++)
+			for (j=0 ; j<view[i].length ; j++)
 				{
-					if (globalView [i][j] == x)
-					break;
+					if (view [i][j] == x){
+						ret.setX(i);
+						ret.setY(j);
+						return ret;
+					}
 					else
 						continue;
 				}
-		Node ret = new Node(i,j);
-		return ret;
+		
+		return null;
 	}
 	
-	public ArrayList<Node> generateSuccessors ( Node n){
+	public static ArrayList<Node> generateSuccessors ( Node n){
 		ArrayList<Node> successors = new ArrayList<Node>();
 		
 		int i=0,j=0;
@@ -134,13 +156,6 @@ public class Info {
 	/*
 	 * We call this method once the exits on both the maps 
 	 * have been spotted.
-	 * 
-	 * Pseudo code
-	 * 
-Expand node n, generating the set M, of its successors that are not already ancestors of n in G. Install these members of M as successors of n in G.
-Establish a pointer to n from each of those members of M that were not already in G (i.e., not already on either OPEN or CLOSED). Add these members of M to OPEN. For each member, m, of M that was already on OPEN or CLOSED, redirect its pointer to n if the best path to m found so far is through n. For each member of M already on CLOSED, redirect the pointers of each of its descendants in G so that they point backward along the best paths found so far to these descendants.
-Reorder the list OPEN in order of increasting f values. (Ties among minimal f values are resolved in favor of the deepest node in the search tree.)
-Go to Step 3.
 	 */
 	public ArrayList<Node> aStar(int [][] globalView){
 
@@ -184,19 +199,19 @@ Go to Step 3.
 		}
 	
 
-	public double hfunc (Node start, Node end, int globalView[][]){
+	public static double hfunc (Node start, Node end, int globalView[][]){
 		Double hValue = (double) (Math.abs(start.getX()-end.getX())+ Math.abs(start.getY()-end.getY()));
 		if(globalView[start.getX()][start.getY()] == 1)
 			hValue += 1000;
 		return hValue;
 	}
-	public double gfunc(Node start, Node end){
+	public static double gfunc(Node start, Node end){
 		Double gValue = (double) (Math.abs(start.getX()-end.getX())+ Math.abs(start.getY()-end.getY()));
 		return gValue;
 	}
 	
 
-	public LinkedList<Node> aStar2 (int [][] globalView ){
+	public static LinkedList<Node> aStar2 (int [][] globalView ){
 		
 		Node start = scanMap(globalView, MapData.playerPosition);
 		Node exit = scanMap(globalView, MapData.exit);
