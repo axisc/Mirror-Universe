@@ -18,6 +18,8 @@ public class Info {
 		static int aintGlobalViewL [][];
 		static int aintGlobalViewR [][];
 		
+		static private int currLX = 0, currLY = 0, currRX = 0, currRY = 0;
+		
 		static ArrayList<LinkedList<Node>> path = new ArrayList<LinkedList<Node>>();
 		static ArrayList<Node> searchGraph = new ArrayList<Node>();
 		static ArrayList<Node> open = new ArrayList<Node>();
@@ -35,6 +37,7 @@ public class Info {
 				for (int j=0; j<200 ;j++)
 					aintGlobalViewL [i][j] = aintGlobalViewR[i][j] = MapData.unknown;
 			
+			//TODO why 3x3?
 			aintLocalViewL = new int [3][3];
 			aintLocalViewR = new int [3][3];
 		}
@@ -63,6 +66,15 @@ public class Info {
 	}
 	
 	
+	public static void updateLocation(char side, int lastXMove, int lastYMove){
+		//TODO add [100+lastXMove+currRX]
+		if(side == 'r'){
+			if(aintGlobalViewR[100+lastXMove][100+lastYMove] != 1){
+				currRX += lastXMove;
+				currRY += lastYMove;
+			}
+		}
+	}
 	
 	/*
 	 * This method updates the Global View of each player.

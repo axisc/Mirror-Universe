@@ -7,28 +7,32 @@ import mirroruniverse.sim.Player;
 
 public class g1Player_new implements Player {
 
+	boolean blnLOver = false;
+	boolean blnROver = false;
+	int lastXMove = -1;
+	int lastYMove = -1;
+	boolean seeLeftExit = false;
+	boolean seeRightExit = false;
+	boolean initialized = false;
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
 		
-		boolean blnLOver = false;
-		boolean blnROver = false;
 		
-		int lastXMove = -1;
-	    int lastYMove = -1;
 	    int intDeltaX = 0, intDeltaY = 0;
 	    int skew = 2;
-	    Info.initInfo();
+	    if(!initialized){
+	    	Info.initInfo();
+	    	initialized = true;
+	    }
 	    
-	    Info.updateGlobalView('l', aintViewL, intDeltaX, intDeltaY);
-	    Info.updateGlobalView('r', aintViewR, intDeltaX, intDeltaY);
+	    Info.updateGlobalView('l', aintViewL, lastXMove, lastYMove);
+	    Info.updateGlobalView('r', aintViewR, lastXMove, lastYMove);
 	    Info.updateLocalView('l', aintViewL);
 	    Info.updateLocalView('r', aintViewR);
 	    
 	    /*
 	     * Check if the Exits are visible.
 	     */
-	    boolean seeLeftExit = false;
-        boolean seeRightExit = false;
         if (Info.scanMap(aintViewL, MapData.exit) != null) seeLeftExit = true;
 		if (Info.scanMap(aintViewR, MapData.exit)!=null) seeRightExit = true;
 		
@@ -58,7 +62,8 @@ public class g1Player_new implements Player {
 	                    if(intDeltaY < 0)		intDeltaY = -1;
 	                    else if(intDeltaY > 0)	intDeltaY = 1;
 	                
-	                } while (aintViewL[ aintViewL.length / 2 + intDeltaY ][ aintViewL.length / 2 + intDeltaX ] == 1);
+	                } while (aintViewL[ aintViewL.length / 2 + intDeltaY ][ aintViewL.length / 2 + intDeltaX ] == 1
+	                		 || (intDeltaY == 0 && intDeltaX == 0));
 	                lastXMove = intDeltaX ;
 	                lastYMove = intDeltaY;
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
@@ -77,14 +82,13 @@ public class g1Player_new implements Player {
 	                    if(intDeltaY < 0)		intDeltaY = -1;
 	                    else if(intDeltaY > 0)	intDeltaY = 1;
 	                
-	                } while (aintViewR[ aintViewR.length / 2 + intDeltaY ][ aintViewR.length / 2 + intDeltaX ] == 1);
+	                } while (aintViewR[ aintViewR.length / 2 + intDeltaY ][ aintViewR.length / 2 + intDeltaX ] == 1
+	                		 || (intDeltaY == 0 && intDeltaX == 0));
 	            	lastXMove = intDeltaX ;
 					lastYMove = intDeltaY;
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
 	            }
 	        }
-				lastXMove = intDeltaX ;
-				lastYMove = intDeltaY;
 	        return MUMap.aintMToD[ lastYMove + 1 ][ lastXMove + 1 ];
 			}
 		

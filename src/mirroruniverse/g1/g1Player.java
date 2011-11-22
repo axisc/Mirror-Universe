@@ -78,7 +78,8 @@ public class g1Player implements Player {
 	                    else if(intDeltaY > 0)
 	                        intDeltaY = 1;
 	                } while (aintViewL[ aintViewL.length / 2 + intDeltaY ][ aintViewL.length 
-	/ 2 + intDeltaX ] == 1);
+	/ 2 + intDeltaX ] == 1 || (intDeltaY == 0 && intDeltaX == 0));
+	                System.out.println(MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ]);
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
 	            }
 	        }
@@ -97,7 +98,7 @@ public class g1Player implements Player {
 	                    else if(intDeltaY > 0)
 	                        intDeltaY = 1;
 	                } while (aintViewR[ aintViewR.length / 2 + intDeltaY ][ aintViewR.length 
-	/ 2 + intDeltaX ] == 1);
+	/ 2 + intDeltaX ] == 1 || (intDeltaY == 0 && intDeltaX == 0));
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
 	            }
 	        }

@@ -97,6 +97,7 @@ public class MirrorUniverse
 			int[][] aintViewL = mumMapL.getView();
 			int[][] aintViewR = mumMapR.getView();
 			int intMove = plrCurrent.lookAndMove( aintViewL, aintViewR );
+			//System.out.println(intMove);
 			try {
 				if ( intStep != 0 )
 				{
