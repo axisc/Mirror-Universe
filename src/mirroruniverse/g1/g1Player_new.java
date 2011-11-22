@@ -9,8 +9,8 @@ public class g1Player_new implements Player {
 
 	boolean blnLOver = false;
 	boolean blnROver = false;
-	int lastXMove = -1;
-	int lastYMove = -1;
+	int lastXMove = 0;
+	int lastYMove = 0;
 	boolean seeLeftExit = false;
 	boolean seeRightExit = false;
 	boolean initialized = false;
