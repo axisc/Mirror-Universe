@@ -42,8 +42,8 @@ public class g1Player_new implements Player {
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
 
 		if(firstMove) {
-			visibilityRadiusL = aintViewL.length-1;
-			visibilityRadiusR = aintViewR.length-1;
+			visibilityRadiusL = aintViewL.length;
+			visibilityRadiusR = aintViewR.length;
 			Info.initInfo(visibilityRadiusL, visibilityRadiusR);
 			firstMove = false;
 		}
