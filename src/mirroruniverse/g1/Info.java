@@ -66,14 +66,21 @@ public class Info {
 	}
 	
 	
-	public static void updateLocation(char side, int lastXMove, int lastYMove){
+	public static void updateLocation(char side, int lastYMove, int lastXMove){
 		//TODO add [100+lastXMove+currRX]
 		if(side == 'r'){
-			if(aintGlobalViewR[100+lastXMove][100+lastYMove] != 1){
+			if(aintGlobalViewR[100+lastYMove][100+lastXMove] != 1){
 				currRX += lastXMove;
 				currRY += lastYMove;
 			}
 		}
+		else
+			if (side == 'l'){
+				if(aintGlobalViewL[100+lastYMove][100+lastXMove]!=1){
+					currLX += lastXMove;
+					currLY += lastYMove;
+				}
+			}
 	}
 	
 	/*
@@ -81,16 +88,18 @@ public class Info {
 	 * It takes as parameter the side, and the current view
 	 * that needs to be added to the Global View
 	 */
-	public static void updateGlobalView (char side, int [][]view, int lastXMove, int lastYMove){
+	public static void updateGlobalView (char side, int [][]view, int lastYMove, int lastXMove){
+		
+		updateLocation(side, lastYMove, lastXMove);
 		if (side == 'r'){
 			for (int i=0; i<view.length; i++)
 				for (int j=0; j<view[i].length; j++)
-					aintGlobalViewR[i+100+lastXMove][j+100+lastYMove] = view [i][j];
+					aintGlobalViewR[i+100+currRY][j+100+currRX] = view [i][j];
 		}
 		else if (side == 'l'){
 			for (int i=0; i<view.length; i++)
 				for (int j=0;j<view[i].length; j++)
-					aintGlobalViewL[i+100+lastXMove][j+100+lastYMove] = view [i][j];
+					aintGlobalViewL[i+100+currLY][j+100+currLX] = view [i][j];
 		}
 		
 	}

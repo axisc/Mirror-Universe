@@ -11,8 +11,8 @@ public class g1Player_new implements Player {
 	boolean blnROver = false;
 	int lastXMove = 0;
 	int lastYMove = 0;
-	boolean seeLeftExit = false;
-	boolean seeRightExit = false;
+	static boolean seeLeftExit = false;
+	static boolean seeRightExit = false;
 	boolean initialized = false;
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
@@ -33,8 +33,8 @@ public class g1Player_new implements Player {
 	    /*
 	     * Check if the Exits are visible.
 	     */
-        if (Info.scanMap(aintViewL, MapData.exit) != null) seeLeftExit = true;
-		if (Info.scanMap(aintViewR, MapData.exit)!=null) seeRightExit = true;
+        if (Info.scanMap(Info.aintGlobalViewL, MapData.exit) != null) seeLeftExit = true;
+		if (Info.scanMap(Info.aintGlobalViewR, MapData.exit)!=null) seeRightExit = true;
 		
 		/*
 		 * If both players can see the exits, we do an A* search algorithm.
