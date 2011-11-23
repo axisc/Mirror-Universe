@@ -1,11 +1,13 @@
 package mirroruniverse.g1;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import mirroruniverse.g1.Direction;
+import mirroruniverse.sim.MUMapConfig;
 
 public class Info {
 
@@ -29,20 +31,11 @@ public class Info {
 	/*
 	 * Default Constructor
 	 */
-		public Info (){
-			aintGlobalViewL = new int [200][200];
-			aintGlobalViewR = new int [200][200];
+		public Info(){
 			
-			for ( int i=0 ; i<200 ;i++)
-				for (int j=0; j<200 ;j++)
-					aintGlobalViewL [i][j] = aintGlobalViewR[i][j] = MapData.unknown;
-			
-			//TODO why 3x3?
-			aintLocalViewL = new int [3][3];
-			aintLocalViewR = new int [3][3];
 		}
 		
-		public static void initInfo(){
+		public static void initInfo(int visibilityRadiusL, int visibilityRadiusR){
 			aintGlobalViewL = new int [200][200];
 			aintGlobalViewR = new int [200][200];
 			
@@ -50,9 +43,9 @@ public class Info {
 				for (int j=0; j<200 ;j++)
 					aintGlobalViewL [i][j] = aintGlobalViewR[i][j] = MapData.unknown;
 			
-			aintLocalViewL = new int [3][3];
-			aintLocalViewR = new int [3][3];
-		}
+			aintLocalViewL = new int [visibilityRadiusL][visibilityRadiusL];
+			aintLocalViewR = new int [visibilityRadiusR][visibilityRadiusR];
+			}
 		
 	/*
 	 * This method checks if the board has been explored

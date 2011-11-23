@@ -21,7 +21,7 @@ public class g1Player_new implements Player {
 	    int intDeltaX = 0, intDeltaY = 0;
 	    int skew = 2;
 	    if(!initialized){
-	    	Info.initInfo();
+	    	Info.initInfo(aintViewL.length, aintViewR.length);
 	    	initialized = true;
 	    }
 	    
@@ -42,6 +42,8 @@ public class g1Player_new implements Player {
 		 */
 		
 		if (seeLeftExit && seeRightExit){
+			if (seeLeftExit) System.out.println("Left player can see exit");
+			if (seeRightExit)System.out.println("Right player can see exit");
 			System.out.println("Time for A*");
 		}
 		else
