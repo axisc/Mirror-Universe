@@ -29,7 +29,9 @@ public class MUMap
 	private int intStep = 0;
 	
 	public static final int[][] aintDToM = { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 },  { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } };
-	public static final int[][] aintMToD = { { 4, 3, 2 }, { 5, 0, 1 }, { 6, 7, 8 } };
+	public static final int[][] aintMToD = { { 4, 3, 2 }, 
+											 { 5, 0, 1 }, 
+											 { 6, 7, 8 } };
 	
 //	protected MUMap( int intXLength, int intYLength, long lngMapSeed, double dblThresh, long lngInitialSeed, int intSightRadius )
 //	{

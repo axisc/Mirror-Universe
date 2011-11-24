@@ -62,16 +62,17 @@ public class Info {
 	public static void updateLocation(char side, int lastYMove, int lastXMove){
 		//TODO add [100+lastXMove+currRX]
 		if(side == 'r'){
-			if(aintGlobalViewR[100+lastYMove][100+lastXMove] != 1){
-				currRX += lastXMove;
-				currRY += lastYMove;
+			if(aintGlobalViewR[100+lastYMove+currRY][100+lastXMove+currRX] != 1){
+				currRX -= lastXMove;
+				currRY -= lastYMove;
+				
 			}
 		}
 		else
 			if (side == 'l'){
-				if(aintGlobalViewL[100+lastYMove][100+lastXMove]!=1){
-					currLX += lastXMove;
-					currLY += lastYMove;
+				if(aintGlobalViewL[100+lastYMove +currLY][100+lastXMove+currLX]!=1){
+					currLX -= lastXMove;
+					currLY -= lastYMove;
 				}
 			}
 	}

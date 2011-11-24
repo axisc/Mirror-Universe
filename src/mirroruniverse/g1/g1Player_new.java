@@ -68,6 +68,7 @@ public class g1Player_new implements Player {
 	                		 || (intDeltaY == 0 && intDeltaX == 0));
 	                lastXMove = intDeltaX ;
 	                lastYMove = intDeltaY;
+	                System.out.println("We are moving in " + MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ] + "direction");
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
 	                
 	            }
@@ -88,9 +89,11 @@ public class g1Player_new implements Player {
 	                		 || (intDeltaY == 0 && intDeltaX == 0));
 	            	lastXMove = intDeltaX ;
 					lastYMove = intDeltaY;
+					System.out.println("We are moving in " + MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ] +" direction");
 	                return MUMap.aintMToD[ intDeltaY + 1 ][ intDeltaX + 1 ];
 	            }
 	        }
+			System.out.println("We are moving in "+MUMap.aintMToD[ lastYMove + 1 ][ lastXMove + 1 ] + "direction");
 	        return MUMap.aintMToD[ lastYMove + 1 ][ lastXMove + 1 ];
 			}
 		
