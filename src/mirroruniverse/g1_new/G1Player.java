@@ -42,6 +42,13 @@ public class G1Player implements Player {
 			initialized = true;
 			System.out.println("Called INITIALIZED ONCE ONLY");
 		}
+
+		
+		Info.updateRelativeLocation('l', directionForPreviousRound);
+		Info.updateRelativeLocation('r', directionForPreviousRound);
+
+		//add exploration possible connections to list
+
 		/*
 		 * If Left player moved 
 		 */
