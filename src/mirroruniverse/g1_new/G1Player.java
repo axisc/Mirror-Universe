@@ -47,8 +47,8 @@ public class G1Player implements Player {
 		Info.updateRelativeLocation('l', directionForPreviousRound);
 		Info.updateRelativeLocation('r', directionForPreviousRound);
 
-		//add exploration possible connections to list
-
+		explore.updatePossibleConnects(aintViewL, aintViewR);
+		
 		/*
 		 * If Left player moved 
 		 */
@@ -91,6 +91,7 @@ public class G1Player implements Player {
 		/*
 		 * Else move randomly, and explore
 		 */
+		//TODO change this line
 		directionForThisRound = explore.randomMove();
 		
 		if ( aintViewL[aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][0]][aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][1]] != 1){

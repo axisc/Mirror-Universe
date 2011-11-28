@@ -1,12 +1,11 @@
 package mirroruniverse.g1_new;
 
+import mirroruniverse.g1_new.Node;
+import mirroruniverse.g1_new.MapData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import mirroruniverse.g1_new.Node;
-import mirroruniverse.g1_new.MapData;
 import mirroruniverse.sim.MUMap;
 
 public class Info {
