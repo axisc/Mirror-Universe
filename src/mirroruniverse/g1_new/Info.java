@@ -24,7 +24,7 @@ public class Info {
 	static int aintGlobalViewL [][];
 	static int aintGlobalViewR [][];
 	
-	static int currLX, currLY, currRX, currRY;
+	static int currLX = 0, currLY = 0, currRX = 0, currRY = 0;
 	
 
 	static ArrayList<LinkedList<Node>> path = new ArrayList<LinkedList<Node>>();
@@ -34,6 +34,7 @@ public class Info {
 	static ArrayList <Node> m = new ArrayList<Node>();
 	static ArrayList <Node> came_from = new ArrayList<Node>();
 	public static final int[][] aintDToM = { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 },  { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } };
+	static Node startL, endL, startR, endR;
 	
 	
 	public static void initInfo ( int visibilityRadiusL, int visibilityRadiusR){
@@ -76,6 +77,14 @@ public class Info {
 		System.out.println("Exiting the Relative Location update");
 	}
 	
+	public static boolean legalPosition(int l){
+		boolean isItTheLegalPosition = false;
+		if (l>-1 && l<aintGlobalViewL.length)
+			isItTheLegalPosition = true;
+		
+		return isItTheLegalPosition;
+	}
+	
 	/*
 	 * This method update the current Global View of the system.
 	 * It takes as parameter the last direction we moved in.
@@ -87,15 +96,36 @@ public class Info {
 		
 		if (side == 'l'){
 			System.out.println("Updating Global view for left player");
+			
+			startL.setX(currLX + 99);
+			startL.setY(currLY + 99);
+			
 			for (int i=0; i<view.length; i++)
-				for (int j=0; j<view[i].length; j++)
-					aintGlobalViewL[i+99+currLY][j+99+currLX] = view [i][j];
+				for (int j=0; j<view[i].length; j++){
+						if (!legalPosition(i+99+currLY)|| !legalPosition(j+99+currLX)) continue;
+						else aintGlobalViewL[i+99+currLY][j+99+currLX] = view [i][j];
+						
+						if ( aintGlobalViewL[i+99+currLY][j+99+currLX] == MapData.exit){
+							endL.setY(i+99+currLY);
+							endL.setX(j+99+currLX);
+						}
+					}
 		}
 		else if (side == 'r'){
+			startR.setX(currRX + 99);
+			startR.setY(currRY + 99);
+			
 			System.out.println("Updating Global view for right player");
 			for (int i=0; i<view.length; i++)
 				for (int j=0; j<view[i].length; j++)
-					aintGlobalViewR[i+99+currRY][j+99+currRX] = view [i][j];
+				{	if (!legalPosition(j+99+currRY) || !legalPosition(j+99+currRX)) continue;
+					else aintGlobalViewR[i+99+currRY][j+99+currRX] = view [i][j];
+			
+					if ( aintGlobalViewR[i+99+currRY][j+99+currRX] == MapData.exit){
+						endR.setY(i+99+currRY);
+						endR.setX(j+99+currRX);
+					}
+				}
 					
 		}
 		System.out.println("Global View for side " + side + "has been updated");
@@ -113,6 +143,7 @@ public class Info {
 		
 		if (side == 'r'){
 			aintLocalViewR = tempLocalView;
+			
 		}
 		else if (side == 'l'){
 			aintLocalViewL = tempLocalView;
@@ -141,10 +172,23 @@ public class Info {
 			return direction;
 		}
 	
-	public static LinkedList<Node> aStar3 (int [][] globalView ){
+	public static LinkedList<Node> aStar3 (int [][] globalView, char side ){
 
-		Node start = scanMap(globalView, MapData.playerPosition);
-		Node exit = scanMap(globalView, MapData.exit);
+		Node start, exit;
+		
+		if (side == 'r' && startR != null) 
+			start = startR;
+		else if (side == 'l' && startL != null)
+			start = startL;
+		else return null;
+		
+		
+		if (side == 'r' && endR != null) 
+			exit = endR;
+		else if (side == 'l' && endL != null)
+			exit = endL;
+		else return null;
+		
 
 		open.add(start);
 

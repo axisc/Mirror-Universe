@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import mirroruniverse.sim.MUMap;
+import mirroruniverse.g1_new.Info;
+
 
 public class Exploration {
 	
@@ -29,6 +31,20 @@ public class Exploration {
 	 * Implements a random Move.Making sure 
 	 * that a 0 move is not returned. 
 	 */
+	
+	public boolean isMoveLegal(int direction){
+		boolean retValue =  true;
+		int lastYMove = MUMap.aintDToM [direction][0];
+		int lastXMove = MUMap.aintDToM [direction][1];
+		
+		if (!G1Player.seeLeftExit && Info.aintLocalViewR [Info.aintLocalViewR.length / 2 + lastYMove][Info.aintLocalViewR.length / 2 + lastXMove] == MapData.exit)
+			retValue = false;
+		if (!G1Player.seeRightExit && Info.aintLocalViewL[Info.aintLocalViewL.length / 2 + lastYMove][Info.aintLocalViewL.length / 2 + lastXMove]== MapData.exit)
+			retValue = false;
+		
+		System.out.println("Returning value " + retValue);
+		return retValue;
+	}
 	public int randomMove (){
 		
 		Random rdmTemp = new Random();
@@ -40,7 +56,7 @@ public class Exploration {
 			nextY = rdmTemp.nextInt(3);
 	
 			d = MUMap.aintMToD[nextX][nextY];
-		} while (d==0);
+		} while (d==0 );
 		
 			System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
 					+ MUMap.aintDToM[d][1]);

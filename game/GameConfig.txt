@@ -1,2 +1,2 @@
 20, 20, 3, 5, 0.1, 5
-5, 5, 3, -1, maps/testMap.txt, 3
+5, 5, 5, -1, maps/testMap.txt, 3
