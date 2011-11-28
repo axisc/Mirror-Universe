@@ -48,6 +48,11 @@ public class Info {
 		
 	aintLocalViewL = new int [visibilityRadiusL][visibilityRadiusL];
 	aintLocalViewR = new int [visibilityRadiusR][visibilityRadiusR];
+	
+	startL = new Node();
+	endL = new Node();
+	startR = new Node();
+	endR = new Node();
 	}
 	
 	public static void updateRelativeLocation(char side,int intDirection){
@@ -118,7 +123,7 @@ public class Info {
 			System.out.println("Updating Global view for right player");
 			for (int i=0; i<view.length; i++)
 				for (int j=0; j<view[i].length; j++)
-				{	if (!legalPosition(j+99+currRY) || !legalPosition(j+99+currRX)) continue;
+				{	if (!legalPosition(i+99+currRY) || !legalPosition(j+99+currRX)) continue;
 					else aintGlobalViewR[i+99+currRY][j+99+currRX] = view [i][j];
 			
 					if ( aintGlobalViewR[i+99+currRY][j+99+currRX] == MapData.exit){
