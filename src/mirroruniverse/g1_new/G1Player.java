@@ -65,10 +65,10 @@ public class G1Player implements Player {
 		 */
 		if (seeLeftExit && seeRightExit){
 			System.out.println("Time for A*");
-			pathL = Info.aStar3(Info.aintGlobalViewL);
+			pathL = Info.aStar3(Info.aintGlobalViewL, 'l');
 			directionL = Info.directionToMove(pathL, Info.aintGlobalViewL);
 
-			pathR = Info.aStar3(Info.aintGlobalViewR);
+			pathR = Info.aStar3(Info.aintGlobalViewR,'r');
 			directionR = Info.directionToMove(pathR, Info.aintGlobalViewR);
 			
 			if(!blnLOver) {
