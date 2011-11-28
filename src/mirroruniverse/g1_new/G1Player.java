@@ -42,6 +42,13 @@ public class G1Player implements Player {
 			initialized = true;
 			System.out.println("Called INITIALIZED ONCE ONLY");
 		}
+
+		
+		Info.updateRelativeLocation('l', directionForPreviousRound);
+		Info.updateRelativeLocation('r', directionForPreviousRound);
+
+		explore.updatePossibleConnects(aintViewL, aintViewR);
+		
 		/*
 		 * If Left player moved 
 		 */
@@ -84,6 +91,7 @@ public class G1Player implements Player {
 		/*
 		 * Else move randomly, and explore
 		 */
+		//TODO change this line
 		directionForThisRound = explore.randomMove();
 		
 		if ( aintViewL[aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][0]][aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][1]] != 1){

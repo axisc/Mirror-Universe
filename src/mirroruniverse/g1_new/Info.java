@@ -1,12 +1,11 @@
 package mirroruniverse.g1_new;
 
+import mirroruniverse.g1_new.Node;
+import mirroruniverse.g1_new.MapData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import mirroruniverse.g1_new.Node;
-import mirroruniverse.g1_new.MapData;
 import mirroruniverse.sim.MUMap;
 
 public class Info {
@@ -39,6 +38,7 @@ public class Info {
 	
 	public static void initInfo ( int visibilityRadiusL, int visibilityRadiusR){
 		astar = new Astar();
+		//TODO should really be 198 b/c middle cell always overlaps
 		aintGlobalViewL = new int [200][200];
 		aintGlobalViewR = new int [200][200];
 		
@@ -66,13 +66,13 @@ public class Info {
 		int intDeltaX = aintMove[ 1 ];
 		
 		System.out.println("Okay, now the Delta Y and X are " + intDeltaY + " " + intDeltaX);
-		if (side == 'l'){
+		if (side == 'l' && aintGlobalViewL[intDeltaY+99+currLY][intDeltaX+99+currLX] != 1){
 			System.out.println("Updating Relative Location for Left side");
 			currLX += intDeltaX;
 			currLY += intDeltaY;
 		}
 		
-		else if (side == 'r'){
+		else if (side == 'r' && aintGlobalViewR[intDeltaY+99+currRY][intDeltaX+99+currRX] != 1){
 			System.out.println("Updating Relative Location for Right side");
 			currRX += intDeltaX;
 			currRY += intDeltaY;
@@ -97,7 +97,6 @@ public class Info {
 	 * is taken from the current round.
 	 */
 	public static void updateGlobalLocation(char side, int view[][], int lastDirectionThatPlayerMovedIn){
-		updateRelativeLocation(side, lastDirectionThatPlayerMovedIn);
 		
 		if (side == 'l'){
 			System.out.println("Updating Global view for left player");
@@ -301,6 +300,31 @@ public class Info {
 
 		return null;
 	}
+	
+	public static int[][] getLGlobalView(){
+		return aintGlobalViewL;
+	}
+	
+	public static int[][] getRGlobalView(){
+		return aintGlobalViewR;
+	}
+
+	public static int getCurrLX() {
+		return currLX;
+	}
+
+	public static int getCurrLY() {
+		return currLY;
+	}
+
+	public static int getCurrRX() {
+		return currRX;
+	}
+
+	public static int getCurrRY() {
+		return currRY;
+	}
+	
 
 }
 
