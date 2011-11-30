@@ -3,17 +3,13 @@ package mirroruniverse.g1_final;
 public class Node {	
 	int x;
 	int y;
-	Node next ;
 	
 	public Node (int x, int y){
 		this.x = x;
 		this.y = y;
 	}
 	
-	public Node() {
-		// TODO Auto-generated constructor stub
-	}
-
+	
 	public int getX() {
 		return x;
 	}

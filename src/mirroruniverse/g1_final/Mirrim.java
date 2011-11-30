@@ -1,8 +1,11 @@
 package mirroruniverse.g1_final;
 
+import java.util.LinkedList;
+
 import mirroruniverse.g1_final.Info;
 import mirroruniverse.g1_final.MapData;
 import mirroruniverse.g1_final.Config;
+import mirroruniverse.g1_final.Node;
 import mirroruniverse.sim.MUMap;
 import mirroruniverse.sim.Player;
 
@@ -14,6 +17,19 @@ public class Mirrim implements Player {
 	static int directionForThisRound = 0, directionForPreviousRound = 0;
 	static boolean updateLeft = false;
 	static boolean updateRight = false;
+	static boolean aStarAlreadyCalledForLeftPlayer = false;
+	static boolean aStarAlreadyCalledForRightPlayer = false;
+
+	boolean blnLOver = false;
+	boolean blnROver = false;
+	int lastXMove;
+	int lastYMove;
+	int[] directionL;
+	int[] directionR;
+	LinkedList<Node> pathL;
+	LinkedList<Node> pathR;
+	int nextMoveL;
+	int nextMoveR;
 	
 	
 	@Override
@@ -58,21 +74,39 @@ public class Mirrim implements Player {
 		 */
 		if (seeLeftExit && seeRightExit){
 			System.out.println("Time for A*");
-//			pathL = Info.aStar3(Info.aintGlobalViewL, 'l');
-//			directionL = Info.directionToMove(pathL, Info.aintGlobalViewL);
-//
-//			pathR = Info.aStar3(Info.aintGlobalViewR,'r');
-//			directionR = Info.directionToMove(pathR, Info.aintGlobalViewR);
-//			
-//			if(!blnLOver) {
-//				nextMoveL++;
-//				directionForThisRound = directionL[nextMoveL];
-//			}
-//			
-//			else if(!blnROver) {
-//				nextMoveR++;
-//				directionForThisRound = directionR[nextMoveR];
-//			}	
+			
+			Info.activateEndGameStrategy();
+		
+		}
+		if (Info.endGameStrategy){
+			
+			if (!aStarAlreadyCalledForLeftPlayer){
+				pathL = Info.aStar3(Info.GlobalViewL, 'l');
+				aStarAlreadyCalledForLeftPlayer = true;
+				}
+			
+			if (pathL != null){
+			directionL = Info.directionToMove(pathL, Info.GlobalViewL);
+			}else
+				if (Config.DEBUG) System.out.println("Path L is not initialized");
+
+			
+			
+			if(!blnLOver) {
+				nextMoveL++;
+				directionForThisRound = directionL[nextMoveL];
+			}
+			
+			if (!aStarAlreadyCalledForRightPlayer){
+			pathR = Info.aStar3(Info.GlobalViewR,'r');
+			aStarAlreadyCalledForRightPlayer = true;
+			}
+			directionR = Info.directionToMove(pathR, Info.GlobalViewR);
+			
+			if(!blnROver) {
+				nextMoveR++;
+				directionForThisRound = directionR[nextMoveR];
+			}	
 		}
 		/*
 		 * Else move randomly, and explore

@@ -3,8 +3,6 @@ package mirroruniverse.g4;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-import mirroruniverse.sim.MUMap;
-
 public class AStar_2 {
 
 	private int[][] map1;
@@ -12,8 +10,10 @@ public class AStar_2 {
 	Node_2 root;
 	PriorityQueue<Node_2> queue;
 	ArrayList<Node_2> closed;
+	ArrayList<Node_2> nodesToPutOff;
 	private int numExitsFound = 0;
 	public boolean debugging = false;
+	private int maxNodes;
 	
 	private int numAdded = 0;
 	
@@ -21,10 +21,34 @@ public class AStar_2 {
 		root = new Node_2(initialX1, initialY1, initialX2, initialY2, null, 0);
 		map1 = kb_p1;
 		map2 = kb_p2;
+		
+		maxNodes = 0;
+		int numOnes = 0;
+		int numZeros = 0;
+		for(int i = 0; i < kb_p1.length; ++i){
+			for(int j = 0; j < kb_p1[0].length; ++j){
+				/*if(/*kb_p1[i][j] != 1 && *//*kb_p1[i][j] != -5){
+					++maxNodes;
+				}*/
+				if(kb_p1[i][j] == 1){
+					++numOnes;
+				}
+				if(kb_p1[i][j] == 0){
+					++numZeros;
+				}
+			}
+		}
+		if(numZeros < 300){
+			maxNodes = 8 * (numOnes + numZeros);
+		} else {
+			maxNodes = 4 * numZeros;
+		}
+		
 		queue = new PriorityQueue<Node_2>();
 		queue.add(root);
 		closed = new ArrayList<Node_2>();
 		closed.add(root);
+		nodesToPutOff = new ArrayList<Node_2>();
 		if(debugging){
 			prettyPrint(root);
 		}
@@ -34,7 +58,7 @@ public class AStar_2 {
 		Node_2.setExit1(x, y);
 		++numExitsFound;
 		if(numExitsFound == 2){
-			exitsFound();
+			//exitsFound();
 		}
 	}
 	
@@ -42,25 +66,43 @@ public class AStar_2 {
 		Node_2.setExit2(x, y);
 		++numExitsFound;
 		if(numExitsFound == 2){
-			exitsFound();
+			//exitsFound();
 		}
 	}
 	
 	public void exitsFound(){
-		Node_2.reRunHeuristic(closed);
-		PriorityQueue<Node_2> tempQ = new PriorityQueue<Node_2>(closed);
+		Node_2.reRunHeuristic(nodesToPutOff);
+		PriorityQueue<Node_2> tempQ = new PriorityQueue<Node_2>(nodesToPutOff);
 		queue = tempQ;
-		closed.clear();
+		if(queue.isEmpty()){
+			System.out.println("Increasing limit");
+			maxNodes *= 2;
+			Node_2.resetDegree();
+			Node_2.reRunHeuristic(closed);
+			queue.addAll(closed);
+			queue.add(root);
+			closed.clear();
+		}
+		nodesToPutOff.clear();
+		//closed.clear();
 	}
 	
 	public ArrayList<Integer> findPath(){
 		while(!queue.isEmpty() && queue.peek().getValue() != 0 && !queue.peek().closeEnough()){
+			if(numAdded > maxNodes){
+				queue.clear();
+				break;
+			}
 			if (debugging) {
 				System.out.println(numAdded + " " + queue.size());
 				//System.out.println("Expanding:" + queue.peek().getValue());
 				System.out.println("Looking at:");
 				System.out.println(queue.peek().getActionPath());
 				prettyPrint(queue.peek());
+			}
+			if(queue.peek().getValue() > 10000){
+				nodesToPutOff.add(queue.poll());
+				continue;
 			}
 			ArrayList<Node_2> nexts = successors(queue.poll());
 			queue.addAll(nexts);
@@ -74,6 +116,7 @@ public class AStar_2 {
 			return findPath();
 		} else {
 			System.out.println("Found :)");
+			System.out.println(queue.peek());
 			System.out.println(queue.peek().getActionPath());
 			return queue.peek().getActionPath();
 		}
@@ -166,7 +209,14 @@ public class AStar_2 {
 					x2 = n.getX2();
 					y2 = n.getY2();
 				}
+				try {
+					if(map1[y1][x1] == -5 || map2[y2][x2] == -5){
+						++action;
+						continue;
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {}
 				Node_2 toAdd = new Node_2(x1, y1, x2, y2, n, indexOfAction[action]);
+				//Node_2.addPathCost(toAdd, 1, map1, map2);
 				
 				if(!n.equals(toAdd) && shouldIAdd(toAdd)){
 					nexts.add(toAdd);
@@ -207,6 +257,21 @@ public class AStar_2 {
 					return false;
 				//}
 			}
+		}
+
+		if(n.getValue() > 10000){
+			for(Node_2 o : nodesToPutOff){
+				if (n.equals(o)){
+					if(n.getDepth() < o.getDepth()){
+						nodesToPutOff.remove(o);
+						break;
+					}
+					return false;
+				}
+			}
+			++numAdded;
+			nodesToPutOff.add(n);
+			return false;
 		}
 		return true;
 	}

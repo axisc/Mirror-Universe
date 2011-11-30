@@ -1,7 +1,13 @@
 package mirroruniverse.g1_final;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import mirroruniverse.g1_final.Node;
 import mirroruniverse.g1_final.Config;
+import mirroruniverse.g1_final.MapData;
 import mirroruniverse.sim.MUMap;
 
 public class Info {
@@ -13,6 +19,16 @@ public class Info {
 	static int currRX,currRY, currLX, currLY;
 	
 	static int count = 0 ;
+	static ArrayList<LinkedList<Node>> path = new ArrayList<LinkedList<Node>>();
+	static ArrayList<Node> searchGraph = new ArrayList<Node>();
+	static ArrayList<Node> open = new ArrayList<Node>();
+	static ArrayList<Node> closed = new ArrayList<Node>();
+//	static ArrayList <Node> m = new ArrayList<Node>();
+	static ArrayList <Node> came_from = new ArrayList<Node>();
+	public static final int[][] aintDToM = { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 },  { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } };
+	static Node startL, endL, startR, endR;
+	
+	
 	
 	public static void incrementCount(){
 		count ++;
@@ -116,9 +132,8 @@ public class Info {
 			for (j=0 ; j<view[i].length ; j++)
 				{
 					if (view [i][j] == x){
-						ret = new Node();
-						ret.setX(i);
-						ret.setY(j);
+						ret = new Node(i,j);
+						
 						return ret;
 					}
 					else
@@ -128,6 +143,145 @@ public class Info {
 		return null;
 
 	}
+	
+	public static int[] directionToMove(LinkedList<Node> path, int[][] globalView) {
+		int [] direction = new int[path.size()-1];
+		Node currPosn = scanMap(globalView, MapData.PLAYERPOSITION);
+		
+		int k = 0;
+		
+		for(int i = 1 ; i <= path.size() ; i++ ) {
+			for( int x= -1; x <= 1 ; x++ )
+				for( int y= -1; y <= 1 ; y++ )
+					if(new Node(currPosn.getX() + x , currPosn.getY() + y ) == path.get(i)) {
+						for(int j = 0 ; j < MUMap.aintDToM.length; i++)
+							if(x == MUMap.aintDToM[j][0] && y == MUMap.aintDToM[j][1]) {
+								direction [k] = j;
+								k++;
+							} 
+					}
+						
+			}
+
+			return direction;
+		}
+	
+	public static LinkedList<Node> aStar3 (int [][] globalView, char side ){
+
+		Node start, exit;
+		if (side == 'r' /*&& startR != null*/) {
+			start= new Node(currRX , currRY);
+		}
+		else if (side == 'l' /*&& startL != null*/){
+			start = new Node(currLX, currLY);
+		}
+		else return null;
+		
+		
+		if (side == 'r'/* && endR != null*/) 
+			//exit = endR;
+			exit = scanMap(globalView, MapData.EXIT);
+		else if (side == 'l' /*&& endL != null*/)
+			//exit = endL;
+			exit = scanMap(globalView, MapData.EXIT);
+		else return null;
+		
+
+		open.add(start);
+
+		ArrayList<Node> succesors = new ArrayList<Node>();
+		LinkedList<Node> path = new LinkedList<Node>();
+		Map<Node, Double> tentCost = new HashMap<Node, Double>();
+		tentCost.put(start, 0.0);
+		path.add(start);
+
+		double min = Double.MAX_VALUE;
+		Node minCostNode = new Node(start.getX(), start.getY());
+		Node tempMin = new Node(start.getX(), start.getY());
+		
+		do{
+			/*
+			 * Looking for the node in open set having the least
+			 * fvalue.
+			 */
+			for(Node m : open){
+				if(min > tentCost.get(m)/*(gfunc(m, exit)+ hfunc(m,exit,globalView))*/){
+					minCostNode = m;
+					min = tentCost.get(m);
+					}
+			}
+	
+				open.remove(minCostNode);
+				closed.add(minCostNode);
+				tempMin = minCostNode;
+
+			boolean isBetter = true;
+
+			if(tempMin == exit)
+				return path;
+
+			else {
+				succesors = generateSuccessors(globalView, tempMin);
+				
+				for(int i=0; i< succesors.size(); i++) {
+					Node m = succesors.get(i);
+					if(!closed.contains(m)){	
+
+						if(!open.contains(m)) {
+							open.add(m);
+							if(Config.DEBUG) System.out.println("node added to open: " + m.getX()+" "+m.getY());
+							tentCost.put(m, (gfunc(tempMin,exit)+ gfunc(tempMin,m)));
+						}
+
+						if(tentCost.get(m) < gfunc(m,exit)) {
+							isBetter = true;
+						}
+					
+						else isBetter = false;
+
+						if(isBetter) {
+							path.add(m);
+							double f = tentCost.get(m) + hfunc(m, exit, globalView); 
+							tentCost.remove(m);
+							tentCost.put(m, f);
+						}
+
+					}
+				}
+			}
+			if (Config.DEBUG) System.out.println("Still in A*- Relax");
+		}while(!open.isEmpty());
+
+		return path;
+	}
+
+	public static double hfunc (Node start, Node end, int globalView[][]){
+		Double hValue = (double) (Math.abs(start.getX()-end.getX())+ Math.abs(start.getY()-end.getY()));
+		if(globalView[start.getX()][start.getY()] == 1)
+			hValue += 1000;
+		return hValue;
+	}
+	
+	public static double gfunc(Node start, Node end){
+		Double gValue = (double) (Math.abs(start.getX()-end.getX())+ Math.abs(start.getY()-end.getY()));
+		return gValue;
+	}
+	
+	public static ArrayList<Node> generateSuccessors (int[][]globalView, Node n){
+		ArrayList<Node> successors = new ArrayList<Node>();
+
+		int i=0,j=0;
+		for (i =-1 ; i <= 1; i++ )
+			for ( j=-1 ; j<=1 ;j++){
+				Node temp = new Node(n.getX()+i, n.getY()+j);
+				if (n != temp && (globalView[temp.getX()][temp.getY()]!= MapData.UNKNOWN))
+					successors.add(temp);
+			}
+		return successors;
+	}
+	
+
+
 	public static int getCurrRX() {
 		return currRX;
 	}
