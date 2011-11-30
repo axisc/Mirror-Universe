@@ -1,7 +1,7 @@
-mirroruniverse.g1_new.G1Player
+//mirroruniverse.g1_new.G1Player
 
 //mirroruniverse.g4.G4PlayerSubmission1
 
 //mirroruniverse.g2.WallFlower
 
-//mirroruniverse.g1_final.Mirrim
+mirroruniverse.g1_final.Mirrim
