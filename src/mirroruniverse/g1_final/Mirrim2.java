@@ -13,6 +13,7 @@ public class Mirrim2 implements Player {
 	ArrayList<Integer> path = new ArrayList<Integer>();
 	AStar_2 starTester ;
 	static Node exitL, exitR;
+	Exploration ex;
 	
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
@@ -23,16 +24,22 @@ public class Mirrim2 implements Player {
 			Info.InitInfo(aintViewL.length, aintViewR.length);
 			initialized = true;
 			path = new ArrayList<Integer>();
-			
+			ex = new Exploration();
 			if (Config.DEBUG) System.out.println("Info class initialized");			
 		}
 		
 		//Increment the count of the player
 		Info.incrementCount();
 		
+		// TODO Update the local view of the player
+		Info.updateLocalView('l', aintViewL);
+		Info.updateLocalView('r', aintViewR);
+		
+		ex.updatePossibleConnects(aintViewL, aintViewR);
+		
 		// TODO Update Global Location
-		Info.updateGlobalLocation2('l', aintViewL, directionForPreviousRound);
-		Info.updateGlobalLocation2('r', aintViewR, directionForPreviousRound);
+		Info.updateGlobalLocation('l', aintViewL, directionForPreviousRound);
+		Info.updateGlobalLocation('r', aintViewR, directionForPreviousRound);
 		
 		/*
 		 * If both players see their exit, activate endGameStrategy
@@ -53,30 +60,29 @@ public class Mirrim2 implements Player {
 				Node startPlayerPositionL = new Node(Info.currLX, Info.currLY);
 				Node startPlayerPositionR = new Node(Info.currRX, Info.currRY);
 				
-				starTester = new AStar_2(startPlayerPositionL.getY(), startPlayerPositionL.getX(), 
-						startPlayerPositionR.getY(), startPlayerPositionR.getX(), Info.GlobalViewL, Info.GlobalViewR);
+				starTester = new AStar_2(startPlayerPositionL.getX(), startPlayerPositionL.getY(), 
+						startPlayerPositionR.getX(), startPlayerPositionR.getY(), Info.GlobalViewL, Info.GlobalViewR);
 				
 				
-				starTester.setExit1(exitL.getY(), exitL.getX());
-				starTester.setExit2(exitR.getY(), exitR.getX());
+				starTester.setExit1(exitL.getX(), exitL.getY());
+				starTester.setExit2(exitR.getX(), exitR.getY());
 				
 				path = starTester.findPath();
 				
 			}
-			else{
 				// TODO Follow path
 				if (Config.DEBUG) System.out.print("Following Path by A*  Direction = ");
 				directionForThisRound = path.remove(0);
 				directionForPreviousRound = directionForThisRound;
 				System.out.println(directionForThisRound);
 				return directionForThisRound;
-			}
+			
 			
 		}
 		else{
 			// TODO General Exploration Strategy
 			if (Config.DEBUG) System.out.println("General Exploration Strategy");
-			directionForThisRound = Exploration.randomMove();
+			directionForThisRound = ex.explore(aintViewL, aintViewR, directionForPreviousRound);
 		}
 			
 		Info.updateRelativeLocation('l', directionForThisRound);
