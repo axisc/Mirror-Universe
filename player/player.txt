@@ -1,6 +1,6 @@
 //mirroruniverse.g1_new.G1Player
 
-//mirroruniverse.g4.G4PlayerSubmission1
+//mirroruniverse.g4.G4Player
 
 //mirroruniverse.g2.WallFlower
 
