@@ -1,5 +1,7 @@
 package mirroruniverse.g1_final;
 
+import java.util.ArrayList;
+
 public class Node {	
 	int x;
 	int y;
@@ -9,6 +11,14 @@ public class Node {
 		this.y = y;
 	}
 	
+	public static boolean contained(ArrayList<Node> astarPath, Node m) {
+		
+		for(Node n : astarPath)
+			if(m.getX() == n.getX() && m.getY() == n.getY())
+				return true;
+		return false;
+	
+	}
 	
 	public int getX() {
 		return x;
