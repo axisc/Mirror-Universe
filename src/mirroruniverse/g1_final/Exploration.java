@@ -89,8 +89,10 @@ public class Exploration {
 	 */
 	public void updatePossibleConnects(int[][] lLocalView, int[][] rLocalView){
 		int index = -1;
-		if(Info.lExited) leftFinished = true;
-		if(Info.rExited) rightFinished = true;
+		if(Info.lExited) 
+			leftFinished = true;
+		if(Info.rExited) 
+			rightFinished = true;
 		if(!leftFinished){
 			//removing inner cells from list
 			for(int i = 1; i < lLocalView.length - 1; i++){
@@ -105,7 +107,15 @@ public class Exploration {
 			}
 			//adding appropriate outer cells to list
 			for(int i = 0; i < lLocalView.length; i += lLocalView.length - 1){
-				for(int j = 0; j < lLocalView.length; j += lLocalView.length - 1){
+				for(int j = 0; j < lLocalView.length; j++){
+					if(Info.GlobalViewL[j+Info.getCurrLY() - lLocalView.length/2][i+Info.getCurrLX() - lLocalView.length/2] == 4 && lLocalView[j][i] == 0){
+						lArrPossiblyConnecting[j+Info.getCurrLY() - lLocalView.length/2][i+Info.getCurrLX() - lLocalView.length/2] = 1;
+						lALPossiblyConnecting.add(new Coord(i+Info.getCurrLX() - lLocalView.length/2, j+Info.getCurrLY() - lLocalView.length/2, 'l'));
+					}
+				}
+			}
+			for(int j = 0; j < lLocalView.length; j += lLocalView.length - 1){
+				for(int i = 1; i < lLocalView.length - 1; i++){
 					if(Info.GlobalViewL[j+Info.getCurrLY() - lLocalView.length/2][i+Info.getCurrLX() - lLocalView.length/2] == 4 && lLocalView[j][i] == 0){
 						lArrPossiblyConnecting[j+Info.getCurrLY() - lLocalView.length/2][i+Info.getCurrLX() - lLocalView.length/2] = 1;
 						lALPossiblyConnecting.add(new Coord(i+Info.getCurrLX() - lLocalView.length/2, j+Info.getCurrLY() - lLocalView.length/2, 'l'));
@@ -126,7 +136,15 @@ public class Exploration {
 				}
 			}
 			for(int i = 0; i < rLocalView.length; i += rLocalView.length - 1){
-				for(int j = 0; j < rLocalView.length; j += rLocalView.length - 1){
+				for(int j = 0; j < rLocalView.length; j++){
+					if(Info.GlobalViewR[j+Info.getCurrRY() - rLocalView.length/2][i+Info.getCurrRX() - rLocalView.length/2] == 4 && rLocalView[j][i] == 0){
+						rArrPossiblyConnecting[j+Info.getCurrRY() - rLocalView.length/2][i+Info.getCurrRX() - rLocalView.length/2] = 1;
+						rALPossiblyConnecting.add(new Coord(i+Info.getCurrRX() - rLocalView.length/2, j+Info.getCurrRY() - rLocalView.length/2, 'r'));
+					}
+				}
+			}
+			for(int j = 0; j < rLocalView.length; j += rLocalView.length - 1){
+				for(int i = 1; i < rLocalView.length - 1; i++){
 					if(Info.GlobalViewR[j+Info.getCurrRY() - rLocalView.length/2][i+Info.getCurrRX() - rLocalView.length/2] == 4 && rLocalView[j][i] == 0){
 						rArrPossiblyConnecting[j+Info.getCurrRY() - rLocalView.length/2][i+Info.getCurrRX() - rLocalView.length/2] = 1;
 						rALPossiblyConnecting.add(new Coord(i+Info.getCurrRX() - rLocalView.length/2, j+Info.getCurrRY() - rLocalView.length/2, 'r'));
@@ -135,7 +153,6 @@ public class Exploration {
 			}
 			rightFinished = rALPossiblyConnecting.isEmpty();
 		}
-		System.out.println(lALPossiblyConnecting.indexOf(new Coord(100, 100, 'l')));
 
 	}
 
