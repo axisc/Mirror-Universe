@@ -128,4 +128,28 @@ public class Info {
 		return null;
 
 	}
+	public static int getCurrRX() {
+		return currRX;
+	}
+	public static void setCurrRX(int currRX) {
+		Info.currRX = currRX;
+	}
+	public static int getCurrRY() {
+		return currRY;
+	}
+	public static void setCurrRY(int currRY) {
+		Info.currRY = currRY;
+	}
+	public static int getCurrLX() {
+		return currLX;
+	}
+	public static void setCurrLX(int currLX) {
+		Info.currLX = currLX;
+	}
+	public static int getCurrLY() {
+		return currLY;
+	}
+	public static void setCurrLY(int currLY) {
+		Info.currLY = currLY;
+	}
 }
