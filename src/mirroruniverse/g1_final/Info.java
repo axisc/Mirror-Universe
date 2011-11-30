@@ -38,8 +38,8 @@ public class Info {
 		LocalViewL = new int [visibilityRadiusL] [visibilityRadiusL];
 		LocalViewR = new int [visibilityRadiusR] [visibilityRadiusR];
 		
-		GlobalViewR = new int [2*(Config.MAX_MAP_SIZE + visibilityRadiusR)][2*(Config.MAX_MAP_SIZE + visibilityRadiusR)];
-		GlobalViewL = new int [2*(Config.MAX_MAP_SIZE + visibilityRadiusL)][2*(Config.MAX_MAP_SIZE + visibilityRadiusL)];
+		GlobalViewR = new int [2*(Config.MAX_MAP_SIZE + ((visibilityRadiusR-1)/2))][2*(Config.MAX_MAP_SIZE + ((visibilityRadiusR-1)/2))];
+		GlobalViewL = new int [2*(Config.MAX_MAP_SIZE + ((visibilityRadiusL-1)/2))][2*(Config.MAX_MAP_SIZE + ((visibilityRadiusL-1)/2))];
 		
 		endGameStrategy = false;
 		currRX = 99; currLX = 99; currRY = 99;	currLY = 99;
@@ -62,21 +62,27 @@ public class Info {
 		int lastXMove = MUMap.aintDToM [directionLastStep] [0];
 		int lastYMove = MUMap.aintDToM [directionLastStep] [1];
 		if (side == 'r') {
-			currRX += lastXMove;
-			currRY += lastYMove;
+			if (LocalViewR[LocalViewR.length/2 + lastXMove][LocalViewR.length/2 + lastYMove] == 0){
+				currRX += lastXMove;
+				currRY += lastYMove;
+				}
+			if (Config.DEBUG) System.out.println("Current X and Y for Right Player " + currRX + " " + currRY);
 		}
 		else if (side == 'l'){
-			currLX += lastXMove;
-			currLY += lastYMove;
+			if (LocalViewL[LocalViewL.length/2 + lastXMove][LocalViewR.length/2 + lastYMove] == 0){
+				currLX += lastXMove;
+				currLY += lastYMove;
+			}
+			if (Config.DEBUG ) System.out.println("Current X and Y for Left Player  " + currLX + " " + currLY);
 		}
+				
+	}
+	
+	public static void updateLocalView (char side, int view[][]){
+		int temp[][] =  view;
 		
-		if (Config.DEBUG) {
-			System.out.println("Current X and Y for Right Player " + currRX + " " + currRY);
-			System.out.println("Current X and Y for Left Player  " + currLX + " " + currLY);
-		}
-		
-		
-		
+		if (side == 'l') LocalViewL = temp;
+		if (side == 'r') LocalViewR = temp;
 	}
 	
 	public static void updateGlobalLocation (char side, int localView [][], int directionLastStep){
@@ -115,27 +121,29 @@ public class Info {
 	public static void updateGlobalLocation2 (char side, int localView [][], int directionLastStep){
 		//updateRelativeLocation ( side, directionLastStep);
 		
-		int scewX = localView.length;
-		int scewY = localView.length;
+		int scewX = (localView.length-1)/2;
+		int scewY = (localView.length-1)/2;
 			for (int i = 0 ; i<localView.length ; i++)
 				for (int j = 0 ; j<localView[0].length ; j++){
 					if (side == 'l'){
-					//	if (!legalPosition(i+ currLX-scewX /*+ relativePlayerPosX*/) || !legalPosition(j+currLY-scewY /*+ relativePlayerPosY*/)) continue;
-						/*else*/ GlobalViewL[i+ currLX - scewX /*+ relativePlayerPosX */][j+currLY - scewY/*+ relativePlayerPosY*/] 
+						if (!legalPosition(i+ currLX-scewX /*+ relativePlayerPosX*/) || !legalPosition(j+currLY-scewY /*+ relativePlayerPosY*/)) continue;
+						else GlobalViewL[i+ currLX - scewX /*+ relativePlayerPosX */][j+currLY - scewY/*+ relativePlayerPosY*/] 
 								=	localView [i] [j];
-						if (localView [i] [j] == MapData.EXIT){
-							Mirrim.exitL = new Node(i+currLX, j+currLY);
-							Mirrim.seeLeftExit = true;
+						if (localView [i] [j] == MapData.EXIT && !Mirrim2.seeLeftExit){
+							Mirrim2.exitL = new Node(i+currLX, j+currLY);
+							Mirrim2.seeLeftExit = true;
+							if (Config.DEBUG) System.out.println("Left Exit Spotted");
 						}
 					}
 					else if (side == 'r'){
-					//	if (!legalPosition(i+ currRX - scewX/*+ relativePlayerPosX*/) || !legalPosition(j+currRY - scewY /*+ relativePlayerPosY*/)) continue;
-						/*else*/ GlobalViewR[i+ currRX - scewX /*+ relativePlayerPosX*/ ][j+currRY - scewY/*+ relativePlayerPosY*/] 
+						if (!legalPosition(i+ currRX - scewX/*+ relativePlayerPosX*/) || !legalPosition(j+currRY - scewY /*+ relativePlayerPosY*/)) continue;
+						else GlobalViewR[i+ currRX - scewX /*+ relativePlayerPosX*/ ][j+currRY - scewY/*+ relativePlayerPosY*/] 
 								=	localView [i] [j];
 						
-						if (localView [i] [j] == MapData.EXIT){
-							Mirrim.exitR = new Node(i+currRX, j+currRY);
-							Mirrim.seeRightExit = true;
+						if (localView [i] [j] == MapData.EXIT && !Mirrim2.seeRightExit){
+							Mirrim2.exitR = new Node(i+currRX, j+currRY);
+							Mirrim2.seeRightExit = true;
+							if (Config.DEBUG) System.out.println("Right Exit Spotted");
 						}
 					}
 				}

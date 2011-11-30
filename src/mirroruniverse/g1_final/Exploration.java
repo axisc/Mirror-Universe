@@ -37,10 +37,10 @@ public class Exploration {
 	 * that a 0 move is not returned. 
 	 */
 	
-	public boolean isMoveLegal(int direction){
+	public static boolean isMoveLegal(int direction){
 		boolean retValue =  true;
-		int lastYMove = MUMap.aintDToM [direction][0];
-		int lastXMove = MUMap.aintDToM [direction][1];
+		int lastXMove = MUMap.aintDToM [direction][0];
+		int lastYMove = MUMap.aintDToM [direction][1];
 		
 		if (!Mirrim.seeLeftExit && Info.LocalViewR [Info.LocalViewR.length / 2 + lastXMove][Info.LocalViewR.length / 2 + lastYMove] == MapData.EXIT)
 			retValue = false;
@@ -50,6 +50,8 @@ public class Exploration {
 		System.out.println("Returning value " + retValue);
 		return retValue;
 	}
+	
+	
 	
 	public static boolean notWall( int intDeltaX,int intDeltaY){
 		if (Info.LocalViewL[ Info.LocalViewL.length / 2 + intDeltaX ][ Info.LocalViewL.length/ 2 + intDeltaY ] == 1 
@@ -70,7 +72,7 @@ public class Exploration {
 			nextY = rdmTemp.nextInt(3);
 	
 			d = MUMap.aintMToD[nextX][nextY];
-		} while (d==0 );
+		} while (d==0 && isMoveLegal(d) );
 		
 			System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
 					+ MUMap.aintDToM[d][1]);

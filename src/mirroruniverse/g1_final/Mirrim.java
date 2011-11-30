@@ -117,6 +117,9 @@ public class Mirrim implements Player {
 				directionForThisRound =  path.remove(0);
 				directionForPreviousRound = directionForThisRound;
 				System.out.println("THIS IS FROM THE PATH " + directionForThisRound);
+				Info.updateRelativeLocation('l', directionForThisRound);
+				Info.updateRelativeLocation('r', directionForThisRound);
+				
 				return directionForThisRound;
 			}
 		}
