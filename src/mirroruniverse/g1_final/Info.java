@@ -38,15 +38,15 @@ public class Info {
 		LocalViewL = new int [visibilityRadiusL] [visibilityRadiusL];
 		LocalViewR = new int [visibilityRadiusR] [visibilityRadiusR];
 		
-		GlobalViewR = new int [Config.getMaxGlobalViewSize()][Config.getMaxGlobalViewSize()];
-		GlobalViewL = new int [Config.getMaxGlobalViewSize()][Config.getMaxGlobalViewSize()];
+		GlobalViewR = new int [2*(Config.MAX_MAP_SIZE + visibilityRadiusR)][2*(Config.MAX_MAP_SIZE + visibilityRadiusR)];
+		GlobalViewL = new int [2*(Config.MAX_MAP_SIZE + visibilityRadiusL)][2*(Config.MAX_MAP_SIZE + visibilityRadiusL)];
 		
 		endGameStrategy = false;
 		currRX = 99; currLX = 99; currRY = 99;	currLY = 99;
 		
 		Config.setDEBUG(true);
-		for (int i=0; i<Config.getMaxGlobalViewSize() ; i++)
-			for (int j=0; j<Config.getMaxGlobalViewSize() ; j++)
+		for (int i=0; i<199 ; i++)
+			for (int j=0; j<199 ; j++)
 				GlobalViewL[i][j] = GlobalViewR [i][j] = MapData.UNKNOWN;
 	}
 
@@ -78,29 +78,67 @@ public class Info {
 		
 		
 	}
+	
 	public static void updateGlobalLocation (char side, int localView [][], int directionLastStep){
-		updateRelativeLocation ( side, directionLastStep);
+//		updateRelativeLocation ( side, directionLastStep);
 		
 		int relativePlayerPosX = localView.length /2;
 		int relativePlayerPosY = localView.length /2;
 			for (int i = -localView.length/2 ; i<localView.length/2 ; i++)
 				for (int j = -localView[i+relativePlayerPosX].length/2 ; j<localView[i+relativePlayerPosX].length/2 ; j++){
 					if (side == 'l'){
-						if (!legalPosition(i+ currLX + relativePlayerPosX) || !legalPosition(j+currLY + relativePlayerPosY)) continue;
-						else GlobalViewL[i+ currLX + relativePlayerPosX ][j+currLY + relativePlayerPosY] 
+						if (!legalPosition(i+ currLX /*+ relativePlayerPosX*/) || !legalPosition(j+currLY /*+ relativePlayerPosY*/)) continue;
+						else GlobalViewL[i+ currLX /*+ relativePlayerPosX */][j+currLY /*+ relativePlayerPosY*/] 
 								=	localView [i+relativePlayerPosX] [j+relativePlayerPosY];
+						if (localView [i+relativePlayerPosX] [j+relativePlayerPosY] == MapData.EXIT){
+							Mirrim.exitL = new Node(i+currLX, j+currLY);
+							Mirrim.seeLeftExit = true;
+						}
 					}
 					else if (side == 'r'){
-						if (!legalPosition(i+ currRX + relativePlayerPosX) || !legalPosition(j+currRY + relativePlayerPosY)) continue;
-						else GlobalViewR[i+ currRX + relativePlayerPosX ][j+currRY + relativePlayerPosY] 
+						if (!legalPosition(i+ currRX /*+ relativePlayerPosX*/) || !legalPosition(j+currRY /*+ relativePlayerPosY*/)) continue;
+						else GlobalViewR[i+ currRX /*+ relativePlayerPosX*/ ][j+currRY /*+ relativePlayerPosY*/] 
 								=	localView [i+relativePlayerPosX] [j+relativePlayerPosY];
+						
+						if (localView [i+relativePlayerPosX] [j+relativePlayerPosY] == MapData.EXIT){
+							Mirrim.exitR = new Node(i+currRX, j+currRY);
+							Mirrim.seeRightExit = true;
+						}
 					}
 					
 				}
-					
+			
+	
 		
+	}
+	
+	public static void updateGlobalLocation2 (char side, int localView [][], int directionLastStep){
+		//updateRelativeLocation ( side, directionLastStep);
 		
-		
+		int scewX = localView.length;
+		int scewY = localView.length;
+			for (int i = 0 ; i<localView.length ; i++)
+				for (int j = 0 ; j<localView[0].length ; j++){
+					if (side == 'l'){
+					//	if (!legalPosition(i+ currLX-scewX /*+ relativePlayerPosX*/) || !legalPosition(j+currLY-scewY /*+ relativePlayerPosY*/)) continue;
+						/*else*/ GlobalViewL[i+ currLX - scewX /*+ relativePlayerPosX */][j+currLY - scewY/*+ relativePlayerPosY*/] 
+								=	localView [i] [j];
+						if (localView [i] [j] == MapData.EXIT){
+							Mirrim.exitL = new Node(i+currLX, j+currLY);
+							Mirrim.seeLeftExit = true;
+						}
+					}
+					else if (side == 'r'){
+					//	if (!legalPosition(i+ currRX - scewX/*+ relativePlayerPosX*/) || !legalPosition(j+currRY - scewY /*+ relativePlayerPosY*/)) continue;
+						/*else*/ GlobalViewR[i+ currRX - scewX /*+ relativePlayerPosX*/ ][j+currRY - scewY/*+ relativePlayerPosY*/] 
+								=	localView [i] [j];
+						
+						if (localView [i] [j] == MapData.EXIT){
+							Mirrim.exitR = new Node(i+currRX, j+currRY);
+							Mirrim.seeRightExit = true;
+						}
+					}
+				}
 	}
 	
 	public static boolean legalPosition(int l){
@@ -134,8 +172,7 @@ public class Info {
 						ret = new Node(i,j);
 						return ret;
 					}
-					else
-						continue;
+					
 				}
 
 		return null;

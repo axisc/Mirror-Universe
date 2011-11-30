@@ -1,7 +1,1 @@
-//mirroruniverse.g1_new.G1Player
-
-//mirroruniverse.g4.G4Player
-
-//mirroruniverse.g2.WallFlower
-
 mirroruniverse.g1_final.Mirrim

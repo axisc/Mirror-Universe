@@ -1,6 +1,8 @@
 package mirroruniverse.g1_final;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import mirroruniverse.g1_final.Info;
 import mirroruniverse.g1_final.MapData;
@@ -8,6 +10,7 @@ import mirroruniverse.g1_final.Config;
 import mirroruniverse.g1_final.Node;
 import mirroruniverse.sim.MUMap;
 import mirroruniverse.sim.Player;
+import mirroruniverse.g4.*;
 
 public class Mirrim implements Player {
 
@@ -15,118 +18,154 @@ public class Mirrim implements Player {
 	static boolean seeLeftExit = false, seeRightExit = false;
 	
 	static int directionForThisRound = 0, directionForPreviousRound = 0;
-	static boolean updateLeft = false;
-	static boolean updateRight = false;
+	static boolean updateLeft = false, updateRight = false;
 	static boolean aStarAlreadyCalledForLeftPlayer = false;
 	static boolean aStarAlreadyCalledForRightPlayer = false;
+	private ArrayList<Integer> path;
 
 	boolean blnLOver = false;
 	boolean blnROver = false;
-	int lastXMove;
-	int lastYMove;
-	int[] directionL;
-	int[] directionR;
-	LinkedList<Node> pathL;
-	LinkedList<Node> pathR;
-	int nextMoveL;
-	int nextMoveR;
+	int lastXMove,lastYMove;
+	int directionL[], directionR[];
+	LinkedList<Node> pathL,pathR;
+	int nextMoveL, nextMoveR;
+	int direction;
+	AStar_2 starTester ;
+	static Node exitR, exitL;
+	
+	void printLocalView (int view [][]){
+		for (int i =0 ; i<view.length ; i++){
+			for ( int j = 0; j<view[i].length ; j++)
+				System.out.print(view [i][j] + " ");
+		System.out.println();
+		}
+		System.out.println();
+	}
 	
 	
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
 		// TODO Auto-generated method stub
 		
+		printLocalView(aintViewL);
+		printLocalView(aintViewR);
+		
 		if (!initialized){
 			Info.InitInfo(aintViewL.length, aintViewR.length);
 			initialized = true;
+			path = new ArrayList<Integer>();
 			
 			if (Config.DEBUG) System.out.println("Info class initialized");
 		}
 		
+		//	Increment the count of the player
 		Info.incrementCount();
 		
-		/*
-		 * If Left player moved 
-		 */
-		if (updateLeft){
-		Info.updateGlobalLocation('l', aintViewL,directionForPreviousRound);
-		updateLeft = false;
-		}
-		/*
-		 * If Right player moved
-		 */
-		if (updateRight){
-		Info.updateGlobalLocation('r', aintViewR, directionForPreviousRound);
-		updateRight = false;
-		}
-
-		if (Info.scanMapBool(Info.GlobalViewL, MapData.EXIT)) {
-			seeLeftExit = true;
-			if (!Config.DEBUG) System.out.println("Left Player has spotted the Exit");
-		}
-		if (Info.scanMapBool(Info.GlobalViewR, MapData.EXIT)) {
-			seeRightExit= true;
-			if (!Config.DEBUG) System.out.println("Right Player has spotted the Exit");
-		}
-		/*
-		 * If both exits are visible, use A* to get
-		 * the next direction
-		 */
-		if (seeLeftExit && seeRightExit){
-			System.out.println("Time for A*");
-			
-			Info.activateEndGameStrategy();
+		/* If Left player moved */
+//		if (updateLeft){
+//		Info.updateGlobalLocation2('l', aintViewL,directionForPreviousRound);
+//		updateLeft = false;
+//		}
+//		/* If Right player moved */
+//		if (updateRight){
+//		Info.updateGlobalLocation2('r', aintViewR, directionForPreviousRound);
+//		updateRight = false;
+//		}
+		Info.updateGlobalLocation2('l', aintViewL,directionForPreviousRound);
+		Info.updateGlobalLocation2('r', aintViewR,directionForPreviousRound);
 		
+//
+//		if (!seeLeftExit && Info.scanMapBool(Info.GlobalViewL, MapData.EXIT)) {
+//			seeLeftExit = true;
+//			exitL =  Info.scanMap(Info.GlobalViewL, MapData.EXIT);
+//			if (Config.DEBUG) System.out.println("Left Player has spotted the Exit");
+//		}
+//		if (!seeRightExit && Info.scanMapBool(Info.GlobalViewR, MapData.EXIT)) {
+//			seeRightExit= true;
+//			exitR = Info.scanMap(Info.GlobalViewR, MapData.EXIT);
+//			if (Config.DEBUG) System.out.println("Right Player has spotted the Exit");
+//		}
+		
+		/*
+		 * If both players see their exit, activate endGameStrategy
+		 */
+		if (seeLeftExit && seeRightExit && !Info.endGameStrategy){
+			System.out.println("Time for A*");
+			Info.activateEndGameStrategy();
 		}
+		
+		/*
+		 * In the end game strategy, call A* for both players and find path.
+		 */
 		if (Info.endGameStrategy){
-			
-			if (!aStarAlreadyCalledForLeftPlayer){
-				pathL = Info.aStar3(Info.GlobalViewL, 'l');
-				aStarAlreadyCalledForLeftPlayer = true;
-				}
-			
-			if (pathL != null){
-			directionL = Info.directionToMove(pathL, Info.GlobalViewL);
-			}else
-				if (Config.DEBUG) System.out.println("Path L is not initialized");
-
-			
-			
-			if(!blnLOver) {
-				nextMoveL++;
-				directionForThisRound = directionL[nextMoveL];
+			if (path.isEmpty()){
+				Node startPlayerPositionL = new Node(Info.currLX, Info.currLY);
+				Node startPlayerPositionR = new Node(Info.currRX, Info.currRY);
+				
+				starTester = new AStar_2(startPlayerPositionL.getY(), startPlayerPositionL.getX(), 
+						startPlayerPositionR.getY(), startPlayerPositionR.getX(), Info.GlobalViewL, Info.GlobalViewR);
+				
+				
+				starTester.setExit1(exitL.getY(), exitL.getX());
+				starTester.setExit2(exitR.getY(), exitR.getX());
+				
+				path = starTester.findPath();
+				
 			}
-			
-			if (!aStarAlreadyCalledForRightPlayer){
-			pathR = Info.aStar3(Info.GlobalViewR,'r');
-			aStarAlreadyCalledForRightPlayer = true;
+			else{
+//				directionForThisRound = actualDirection(path.remove(0));
+				directionForThisRound =  path.remove(0);
+				directionForPreviousRound = directionForThisRound;
+				System.out.println("THIS IS FROM THE PATH " + directionForThisRound);
+				return directionForThisRound;
 			}
-			directionR = Info.directionToMove(pathR, Info.GlobalViewR);
-			
-			if(!blnROver) {
-				nextMoveR++;
-				directionForThisRound = directionR[nextMoveR];
-			}	
 		}
+		
 		/*
 		 * Else move randomly, and explore
 		 */
-		directionForThisRound = Exploration.randomMove();
+		else {
 		
-		if ( aintViewL[aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][0]][aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][1]] != 1){
-			updateLeft = true;
-			if (Config.DEBUG)
-				System.out.println("We need to update Left position");
+		directionForThisRound = Exploration.randomMove();
 		}
-		if ( aintViewR[aintViewR.length / 2 + MUMap.aintDToM[directionForThisRound][0]][aintViewR.length / 2 + MUMap.aintDToM[directionForThisRound][1]] != 1){
-			updateRight = true;
-			if (Config.DEBUG)
-				System.out.println("We need to update Right position");
-		}
+		
+//		if ( aintViewL[aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][1]][aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][0]] != 1){
+//			updateLeft = true;
+//			Info.updateRelativeLocation('l', directionForThisRound);
+//			if (Config.DEBUG)
+//				System.out.println("We need to update Left position");
+//		}
+//		if ( aintViewR[aintViewR.length / 2 + MUMap.aintDToM[directionForThisRound][1]][aintViewR.length / 2 + MUMap.aintDToM[directionForThisRound][0]] != 1){
+//			updateRight = true;
+//			Info.updateRelativeLocation('r', directionForThisRound);
+//			if (Config.DEBUG)
+//				System.out.println("We need to update Right position");
+//		}
+		
+		Info.updateRelativeLocation('l', directionForThisRound);
+		Info.updateRelativeLocation('r', directionForThisRound);
+		
 		directionForPreviousRound = directionForThisRound;
 		return directionForThisRound;
 
 		
+	}
+
+
+	private int actualDirection(Integer remove) {
+		// TODO Auto-generated method stub
+		
+		switch(remove){
+		case 4:	return 4;
+		case 8: return 8;
+		case 5: return 3;
+		case 1: return 7;
+		case 7: return 1;
+		case 2: return 6;
+		case 6: return 2;
+		case 3: return 5;
+		}
+		return 0;
 	}
 
 }

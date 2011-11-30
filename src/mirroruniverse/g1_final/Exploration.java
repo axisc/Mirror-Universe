@@ -50,6 +50,15 @@ public class Exploration {
 		System.out.println("Returning value " + retValue);
 		return retValue;
 	}
+	
+	public static boolean notWall( int intDeltaX,int intDeltaY){
+		if (Info.LocalViewL[ Info.LocalViewL.length / 2 + intDeltaX ][ Info.LocalViewL.length/ 2 + intDeltaY ] == 1 
+				|| (intDeltaY == 0 && intDeltaX == 0) || Info.LocalViewR[Info.LocalViewL.length / 2 + intDeltaX][Info.LocalViewL.length / 2 + intDeltaY] ==1)
+			return false;
+		
+		else return true;
+	}
+	
 	public static int randomMove (){
 		
 		Random rdmTemp = new Random();
