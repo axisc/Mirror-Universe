@@ -1,6 +1,7 @@
 package mirroruniverse.g1_new;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import mirroruniverse.sim.MUMap;
@@ -19,8 +20,8 @@ public class Exploration {
 	Coord target;
 	
 	public Exploration(){
-		lArrPossiblyConnecting = new int[198][198];
-		rArrPossiblyConnecting = new int[198][198];
+		lArrPossiblyConnecting = new int[199][199];
+		rArrPossiblyConnecting = new int[199][199];
 
 		lALPossiblyConnecting = new ArrayList<Coord>();
 		rALPossiblyConnecting = new ArrayList<Coord>();
@@ -41,9 +42,9 @@ public class Exploration {
 		int lastYMove = MUMap.aintDToM [direction][0];
 		int lastXMove = MUMap.aintDToM [direction][1];
 		
-		if (!G1Player.seeLeftExit && Info.aintLocalViewR [Info.aintLocalViewR.length / 2 + lastYMove][Info.aintLocalViewR.length / 2 + lastXMove] == MapData.exit)
+		if (!G1Player.seeLeftExit && Info.aintLocalViewR [Info.aintLocalViewR.length / 2 + lastXMove][Info.aintLocalViewR.length / 2 + lastYMove] == MapData.exit)
 			retValue = false;
-		if (!G1Player.seeRightExit && Info.aintLocalViewL[Info.aintLocalViewL.length / 2 + lastYMove][Info.aintLocalViewL.length / 2 + lastXMove]== MapData.exit)
+		if (!G1Player.seeRightExit && Info.aintLocalViewL[Info.aintLocalViewL.length / 2 + lastXMove][Info.aintLocalViewL.length / 2 + lastYMove]== MapData.exit)
 			retValue = false;
 		
 		System.out.println("Returning value " + retValue);
@@ -74,26 +75,27 @@ public class Exploration {
 	 * Remove from list any squares not on the outside of our view radius (incl player square)
 	 */
 	public void updatePossibleConnects(int[][] lLocalView, int[][] rLocalView){
-		//removing inner cells from list
 		int index = -1;
 		if(!leftFinished){
+			//removing inner cells from list
 			for(int i = 1; i < lLocalView.length - 1; i++){
 				for(int j = 1; j < lLocalView.length - 1; j++){
-					if((index = lALPossiblyConnecting.indexOf(new Coord(i+99+Info.getCurrLY(), j+99+Info.getCurrLX()))) != -1){
-						lArrPossiblyConnecting[j+99+Info.getCurrLY()][i+99+Info.getCurrLX()] = 0;
+					if((index = lALPossiblyConnecting.indexOf(new Coord(j+99+Info.getCurrLX(), i+99+Info.getCurrLY(), 'l'))) != -1){
+						lArrPossiblyConnecting[i+99+Info.getCurrLX()][j+99+Info.getCurrLY()] = 0;
 						if(lALPossiblyConnecting.get(index).equals(target))
 							target = null;
 						lALPossiblyConnecting.remove(index);
 					}
 				}
 			}
+			//adding appropriate outer cells to list
 			for(int i = 0; i < lLocalView.length; i += lLocalView.length - 1){
 				for(int j = 0; j < lLocalView.length; j += lLocalView.length - 1){
-					if(Info.aintGlobalViewL[j+99+Info.getCurrLY()][i+99+Info.getCurrLX()] == 4 && lLocalView[j][i] == 0){
-						lArrPossiblyConnecting[j+99+Info.getCurrLY()][i+99+Info.getCurrLX()] = 1;
+					if(Info.aintGlobalViewL[i+99+Info.getCurrLX()][j+99+Info.getCurrLY()] == 4 && lLocalView[i][j] == 0){
+						lArrPossiblyConnecting[i+99+Info.getCurrLX()][j+99+Info.getCurrLY()] = 1;
 						if(rALPossiblyConnecting.get(index).equals(target))
 							target = null;
-						lALPossiblyConnecting.add(new Coord(j+99+Info.getCurrLY(), i+99+Info.getCurrLX()));
+						lALPossiblyConnecting.add(new Coord(i+99+Info.getCurrLX(), j+99+Info.getCurrLY(), 'l'));
 					}
 				}
 			}
@@ -102,17 +104,17 @@ public class Exploration {
 		if(!rightFinished){
 			for(int i = 1; i < rLocalView.length - 1; i++){
 				for(int j = 1; j < rLocalView.length - 1; j++){
-					if((index = rALPossiblyConnecting.indexOf(new Coord(i+99+Info.getCurrRY(), j+99+Info.getCurrRX()))) != -1){
-						rArrPossiblyConnecting[j+99+Info.getCurrRY()][i+99+Info.getCurrRX()] = 1;
+					if((index = rALPossiblyConnecting.indexOf(new Coord(j+99+Info.getCurrRX(), i+99+Info.getCurrRY(), 'r'))) != -1){
+						rArrPossiblyConnecting[i+99+Info.getCurrRX()][j+99+Info.getCurrRY()] = 1;
 						rALPossiblyConnecting.remove(index);
 					}
 				}
 			}
 			for(int i = 0; i < rLocalView.length; i += rLocalView.length - 1){
 				for(int j = 0; j < rLocalView.length; j += rLocalView.length - 1){
-					if(Info.aintGlobalViewR[j+99+Info.getCurrRY()][i+99+Info.getCurrRX()] == 4 && rLocalView[j][i] == 0){
-						rArrPossiblyConnecting[j+99+Info.getCurrRY()][i+99+Info.getCurrRX()] = 1;
-						rALPossiblyConnecting.add(new Coord(j+99+Info.getCurrRY(), i+99+Info.getCurrRX()));
+					if(Info.aintGlobalViewR[i+99+Info.getCurrRX()][j+99+Info.getCurrRY()] == 4 && rLocalView[i][j] == 0){
+						rArrPossiblyConnecting[i+99+Info.getCurrRX()][j+99+Info.getCurrRY()] = 1;
+						rALPossiblyConnecting.add(new Coord(i+99+Info.getCurrRX(), j+99+Info.getCurrRY(), 'r'));
 					}
 				}
 			}
@@ -127,9 +129,18 @@ public class Exploration {
 	 * While target remains in list and not at target, use astar to move towards target
 	 */
 	public int explore(int[][] lLocalView, int[][] rLocalView, int lastDirection){
-		//TODO make more intelligent
-		if(target == null){
-			if(!leftFinished)
+		//TODO make more intelligent (both able to move, etc)
+		//if target is no longer possibly connecting, generate new target
+		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))){
+			Collections.sort(lALPossiblyConnecting);
+			Collections.sort(rALPossiblyConnecting);
+			if(!leftFinished && !rightFinished){
+				if(lALPossiblyConnecting.get(0).compareTo(rALPossiblyConnecting.get(0)) < 0)
+					target = lALPossiblyConnecting.get(0);
+				else
+					target = rALPossiblyConnecting.get(0);
+			}
+			else if(!leftFinished)
 				target = lALPossiblyConnecting.get(0);
 			else
 				target = rALPossiblyConnecting.get(0);
@@ -162,18 +173,23 @@ public class Exploration {
 	 */
 }
 
-class Coord{
+class Coord implements Comparable<Coord>{
 	
-	int x,y;
+	int x,y, globalX, globalY;
+	char side;
 	
-	public Coord(int y, int x){
+	public Coord(int x, int y, char side){
 		this.y = y;
 		this.x = x;
+		this.side = side;
 	}
 	
+	//TODO should side be included in the equals?
 	public boolean equals(Coord c){
 		return y == c.getY() && x == c.getX();
 	}
+	
+	
 
 	public int getX() {
 		return x;
@@ -181,6 +197,31 @@ class Coord{
 
 	public int getY() {
 		return y;
+	}
+	
+	public char getSide(){
+		return side;
+	}
+
+	@Override
+	public int compareTo(Coord c) {
+		if(this.equals(c))
+			return 0;
+		if(side == 'l'){
+			globalX = Info.getCurrLX();
+			globalY = Info.getCurrLY();
+		}
+		else{
+			globalX = Info.getCurrRX();
+			globalY = Info.getCurrRY();
+		}
+		if(Math.sqrt(Math.pow(x - (99 + globalX), 2) + Math.pow(y - (99 + globalY), 2)) 
+				< Math.sqrt(Math.pow(c.getX() - (99 + globalX), 2) + Math.pow(c.getY() - (99 + globalY), 2))){
+			return -1;
+		}
+		else{
+			return 1;
+		}
 	}
 	
 }

@@ -38,12 +38,11 @@ public class Info {
 	
 	public static void initInfo ( int visibilityRadiusL, int visibilityRadiusR){
 		astar = new Astar();
-		//TODO should really be 198 b/c middle cell always overlaps
-		aintGlobalViewL = new int [200][200];
-		aintGlobalViewR = new int [200][200];
+		aintGlobalViewL = new int [199][199];
+		aintGlobalViewR = new int [199][199];
 		
-		for ( int i=0 ; i<200 ;i++)
-			for (int j=0; j<200 ;j++)
+		for ( int i=0 ; i<199 ;i++)
+			for (int j=0; j<199 ;j++)
 				aintGlobalViewL [i][j] = aintGlobalViewR[i][j] = MapData.unknown;
 		
 	aintLocalViewL = new int [visibilityRadiusL][visibilityRadiusL];
@@ -62,17 +61,17 @@ public class Info {
 		 *  TODO check if X and Y need to be flipped here.
 		 *  This thing honestly confuses me.
 		 */
-		int intDeltaY = aintMove[ 0 ];
-		int intDeltaX = aintMove[ 1 ];
+		int intDeltaY = aintMove[ 1 ];
+		int intDeltaX = aintMove[ 0 ];
 		
 		System.out.println("Okay, now the Delta Y and X are " + intDeltaY + " " + intDeltaX);
-		if (side == 'l' && aintGlobalViewL[intDeltaY+99+currLY][intDeltaX+99+currLX] != 1){
+		if (side == 'l' && aintGlobalViewL[intDeltaX+99+currLX][intDeltaY+99+currLY] != 1){
 			System.out.println("Updating Relative Location for Left side");
 			currLX += intDeltaX;
 			currLY += intDeltaY;
 		}
 		
-		else if (side == 'r' && aintGlobalViewR[intDeltaY+99+currRY][intDeltaX+99+currRX] != 1){
+		else if (side == 'r' && aintGlobalViewR[intDeltaX+99+currRX][intDeltaY+99+currRY] != 1){
 			System.out.println("Updating Relative Location for Right side");
 			currRX += intDeltaX;
 			currRY += intDeltaY;
@@ -107,9 +106,9 @@ public class Info {
 			for (int i=0; i<view.length; i++)
 				for (int j=0; j<view[i].length; j++){
 						if (!legalPosition(i+99+currLY)|| !legalPosition(j+99+currLX)) continue;
-						else aintGlobalViewL[i+99+currLY][j+99+currLX] = view [i][j];
+						else aintGlobalViewL[j+99+currLX][i+99+currLY] = view [j][i];
 						
-						if ( aintGlobalViewL[i+99+currLY][j+99+currLX] == MapData.exit){
+						if ( aintGlobalViewL[j+99+currLX][i+99+currLY] == MapData.exit){
 							endL.setY(i+99+currLY);
 							endL.setX(j+99+currLX);
 						}
@@ -123,9 +122,9 @@ public class Info {
 			for (int i=0; i<view.length; i++)
 				for (int j=0; j<view[i].length; j++)
 				{	if (!legalPosition(i+99+currRY) || !legalPosition(j+99+currRX)) continue;
-					else aintGlobalViewR[i+99+currRY][j+99+currRX] = view [i][j];
+					else aintGlobalViewR[j+99+currRX][i+99+currRY] = view [j][i];
 			
-					if ( aintGlobalViewR[i+99+currRY][j+99+currRX] == MapData.exit){
+					if ( aintGlobalViewR[j+99+currRX][i+99+currRY] == MapData.exit){
 						endR.setY(i+99+currRY);
 						endR.setX(j+99+currRX);
 					}
