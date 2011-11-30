@@ -27,8 +27,7 @@ public class Info {
 	static ArrayList <Node> came_from = new ArrayList<Node>();
 	public static final int[][] aintDToM = { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 },  { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } };
 	static Node startL, endL, startR, endR;
-	
-	
+	static Map<Node, Double> tentCost = new HashMap<Node, Double>();
 	
 	public static void incrementCount(){
 		count ++;
@@ -133,7 +132,6 @@ public class Info {
 				{
 					if (view [i][j] == x){
 						ret = new Node(i,j);
-						
 						return ret;
 					}
 					else
@@ -178,20 +176,24 @@ public class Info {
 		else return null;
 		
 		
-		if (side == 'r'/* && endR != null*/) 
-			//exit = endR;
-			exit = scanMap(globalView, MapData.EXIT);
-		else if (side == 'l' /*&& endL != null*/)
-			//exit = endL;
-			exit = scanMap(globalView, MapData.EXIT);
-		else return null;
-		
+//		if (side == 'r'/* && endR != null*/) 
+//			//exit = endR;
+//			exit = scanMap(globalView, MapData.EXIT);
+//		else if (side == 'l' /*&& endL != null*/)
+//			//exit = endL;
+//			exit = scanMap(globalView, MapData.EXIT);
+//		else return null;
 
+		exit = scanMap(globalView, MapData.EXIT);
+
+		if (start == null && exit == null )
+			System.out.println("One of the start nodes is null");
+		
 		open.add(start);
 
 		ArrayList<Node> succesors = new ArrayList<Node>();
 		LinkedList<Node> path = new LinkedList<Node>();
-		Map<Node, Double> tentCost = new HashMap<Node, Double>();
+		
 		tentCost.put(start, 0.0);
 		path.add(start);
 
@@ -217,20 +219,22 @@ public class Info {
 
 			boolean isBetter = true;
 
-			if(tempMin == exit)
+			if(tempMin.getX() == exit.getX() && tempMin.getY() == exit.getY())
 				return path;
 
 			else {
 				succesors = generateSuccessors(globalView, tempMin);
+//				if(succesors.contains(minCostNode)) succesors.remove(minCostNode);
 				
 				for(int i=0; i< succesors.size(); i++) {
 					Node m = succesors.get(i);
-					if(!closed.contains(m)){	
+					if(!Node.contained(closed, m)){	
 
-						if(!open.contains(m)) {
+						if(!Node.contained(open, m)) {
 							open.add(m);
 							if(Config.DEBUG) System.out.println("node added to open: " + m.getX()+" "+m.getY());
 							tentCost.put(m, (gfunc(tempMin,exit)+ gfunc(tempMin,m)));
+							if(Config.DEBUG) System.out.println("node cost::" + tentCost.get(m));
 						}
 
 						if(tentCost.get(m) < gfunc(m,exit)) {
@@ -269,18 +273,18 @@ public class Info {
 	
 	public static ArrayList<Node> generateSuccessors (int[][]globalView, Node n){
 		ArrayList<Node> successors = new ArrayList<Node>();
-
-		int i=0,j=0;
-		for (i =-1 ; i <= 1; i++ )
-			for ( j=-1 ; j<=1 ;j++){
+		
+		for (int i =-1 ; i <= 1; i++ )
+			for (int j=-1 ; j<=1 ;j++){
 				Node temp = new Node(n.getX()+i, n.getY()+j);
-				if (n != temp && (globalView[temp.getX()][temp.getY()]!= MapData.UNKNOWN))
+				if(i==0 && j==0)
+					continue;
+				if ((globalView[temp.getX()][temp.getY()]!= MapData.UNKNOWN))
 					successors.add(temp);
 			}
+		
 		return successors;
 	}
-	
-
 
 	public static int getCurrRX() {
 		return currRX;
