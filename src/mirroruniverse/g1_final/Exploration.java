@@ -1,16 +1,15 @@
 package mirroruniverse.g1_final;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Random;
 
-import mirroruniverse.g1_final.Info;
-import mirroruniverse.g1_final.MapData;
-import mirroruniverse.g1_final.Mirrim;
 import mirroruniverse.sim.MUMap;
+import mirroruniverse.g1_final.Info;
+
 
 public class Exploration {
-
+	
 	private int[][] lArrPossiblyConnecting;
 	private int[][] rArrPossiblyConnecting;
 		
@@ -21,8 +20,8 @@ public class Exploration {
 	Coord target;
 	
 	public Exploration(){
-		lArrPossiblyConnecting = new int[198][198];
-		rArrPossiblyConnecting = new int[198][198];
+		lArrPossiblyConnecting = new int[199][199];
+		rArrPossiblyConnecting = new int[199][199];
 
 		lALPossiblyConnecting = new ArrayList<Coord>();
 		rALPossiblyConnecting = new ArrayList<Coord>();
@@ -34,31 +33,69 @@ public class Exploration {
 	}
 	
 	/*
+	 * Implements a random Move.Making sure 
+	 * that a 0 move is not returned. 
+	 */
+	
+	public boolean isMoveLegal(int direction){
+		boolean retValue =  true;
+		int lastYMove = MUMap.aintDToM [direction][0];
+		int lastXMove = MUMap.aintDToM [direction][1];
+		
+		if (!Mirrim.seeLeftExit && Info.LocalViewR [Info.LocalViewR.length / 2 + lastXMove][Info.LocalViewR.length / 2 + lastYMove] == MapData.EXIT)
+			retValue = false;
+		if (!Mirrim.seeRightExit && Info.LocalViewL[Info.LocalViewL.length / 2 + lastXMove][Info.LocalViewL.length / 2 + lastYMove]== MapData.EXIT)
+			retValue = false;
+		
+		System.out.println("Returning value " + retValue);
+		return retValue;
+	}
+	public static int randomMove (){
+		
+		Random rdmTemp = new Random();
+		int d=0;
+		int nextX =0 ,nextY = 0;
+				
+		do{
+			nextX = rdmTemp.nextInt(3);
+			nextY = rdmTemp.nextInt(3);
+	
+			d = MUMap.aintMToD[nextX][nextY];
+		} while (d==0 );
+		
+			System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
+					+ MUMap.aintDToM[d][1]);
+		return d;
+
+	}
+	
+	/*
 	 * Look at view from each player and determine which are the newly explored squares
 	 * If any of those new squares are 0, add them to list 
 	 * Remove from list any squares not on the outside of our view radius (incl player square)
 	 */
 	public void updatePossibleConnects(int[][] lLocalView, int[][] rLocalView){
-		//removing inner cells from list
 		int index = -1;
 		if(!leftFinished){
+			//removing inner cells from list
 			for(int i = 1; i < lLocalView.length - 1; i++){
 				for(int j = 1; j < lLocalView.length - 1; j++){
-					if((index = lALPossiblyConnecting.indexOf(new Coord(i+99+Info.getCurrLY(), j+99+Info.getCurrLX()))) != -1){
-						lArrPossiblyConnecting[j+99+Info.getCurrLY()][i+99+Info.getCurrLX()] = 0;
+					if((index = lALPossiblyConnecting.indexOf(new Coord(j+99+Info.getCurrLX(), i+99+Info.getCurrLY(), 'l'))) != -1){
+						lArrPossiblyConnecting[i+99+Info.getCurrLX()][j+99+Info.getCurrLY()] = 0;
 						if(lALPossiblyConnecting.get(index).equals(target))
 							target = null;
 						lALPossiblyConnecting.remove(index);
 					}
 				}
 			}
+			//adding appropriate outer cells to list
 			for(int i = 0; i < lLocalView.length; i += lLocalView.length - 1){
 				for(int j = 0; j < lLocalView.length; j += lLocalView.length - 1){
-					if(Info.GlobalViewL[j+99+Info.getCurrLY()][i+99+Info.getCurrLX()] == 4 && lLocalView[j][i] == 0){
-						lArrPossiblyConnecting[j+99+Info.getCurrLY()][i+99+Info.getCurrLX()] = 1;
+					if(Info.GlobalViewL[i+99+Info.getCurrLX()][j+99+Info.getCurrLY()] == 4 && lLocalView[i][j] == 0){
+						lArrPossiblyConnecting[i+99+Info.getCurrLX()][j+99+Info.getCurrLY()] = 1;
 						if(rALPossiblyConnecting.get(index).equals(target))
 							target = null;
-						lALPossiblyConnecting.add(new Coord(j+99+Info.getCurrLY(), i+99+Info.getCurrLX()));
+						lALPossiblyConnecting.add(new Coord(i+99+Info.getCurrLX(), j+99+Info.getCurrLY(), 'l'));
 					}
 				}
 			}
@@ -67,17 +104,17 @@ public class Exploration {
 		if(!rightFinished){
 			for(int i = 1; i < rLocalView.length - 1; i++){
 				for(int j = 1; j < rLocalView.length - 1; j++){
-					if((index = rALPossiblyConnecting.indexOf(new Coord(i+99+Info.getCurrRY(), j+99+Info.getCurrRX()))) != -1){
-						rArrPossiblyConnecting[j+99+Info.getCurrRY()][i+99+Info.getCurrRX()] = 1;
+					if((index = rALPossiblyConnecting.indexOf(new Coord(j+99+Info.getCurrRX(), i+99+Info.getCurrRY(), 'r'))) != -1){
+						rArrPossiblyConnecting[i+99+Info.getCurrRX()][j+99+Info.getCurrRY()] = 1;
 						rALPossiblyConnecting.remove(index);
 					}
 				}
 			}
 			for(int i = 0; i < rLocalView.length; i += rLocalView.length - 1){
 				for(int j = 0; j < rLocalView.length; j += rLocalView.length - 1){
-					if(Info.GlobalViewR[j+99+Info.getCurrRY()][i+99+Info.getCurrRX()] == 4 && rLocalView[j][i] == 0){
-						rArrPossiblyConnecting[j+99+Info.getCurrRY()][i+99+Info.getCurrRX()] = 1;
-						rALPossiblyConnecting.add(new Coord(j+99+Info.getCurrRY(), i+99+Info.getCurrRX()));
+					if(Info.GlobalViewR[i+99+Info.getCurrRX()][j+99+Info.getCurrRY()] == 4 && rLocalView[i][j] == 0){
+						rArrPossiblyConnecting[i+99+Info.getCurrRX()][j+99+Info.getCurrRY()] = 1;
+						rALPossiblyConnecting.add(new Coord(i+99+Info.getCurrRX(), j+99+Info.getCurrRY(), 'r'));
 					}
 				}
 			}
@@ -86,16 +123,24 @@ public class Exploration {
 	}
 	
 
-
 	 /*
 	 * If any new squares were added, pick one of them and make it the target
 	 * Otherwise, pick one square from possiblyConnecting list and set it as target
 	 * While target remains in list and not at target, use astar to move towards target
 	 */
 	public int explore(int[][] lLocalView, int[][] rLocalView, int lastDirection){
-		//TODO make more intelligent
-		if(target == null){
-			if(!leftFinished)
+		//TODO make more intelligent (both able to move, etc)
+		//if target is no longer possibly connecting, generate new target
+		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))){
+			Collections.sort(lALPossiblyConnecting);
+			Collections.sort(rALPossiblyConnecting);
+			if(!leftFinished && !rightFinished){
+				if(lALPossiblyConnecting.get(0).compareTo(rALPossiblyConnecting.get(0)) < 0)
+					target = lALPossiblyConnecting.get(0);
+				else
+					target = rALPossiblyConnecting.get(0);
+			}
+			else if(!leftFinished)
 				target = lALPossiblyConnecting.get(0);
 			else
 				target = rALPossiblyConnecting.get(0);
@@ -108,102 +153,43 @@ public class Exploration {
 		return 1;
 	}
 
-	
-	/*
-	 * This move checks where the new direction lands 
-	 * the player, if executed.
-	 */
-	public static int whereWillThisDirectionTakeMe(char side, int direction){
-		int result = 0;
-		int lastXMove = MUMap.aintDToM[direction][0];
-		int lastYMove = MUMap.aintDToM[direction][1];
-		
-		if (side == 'r')
-		result = Info.LocalViewR [Info.LocalViewR.length / 2 + lastXMove][Info.LocalViewR.length / 2 + lastYMove];
-		else
-			result = Info.LocalViewL [Info.LocalViewL.length / 2 + lastXMove][Info.LocalViewL.length / 2 + lastYMove];
-		
-		switch (result){
-		case MapData.EXIT :
-			return MapData.EXIT;
-		case MapData.FREESPACE :
-			return MapData.FREESPACE;
-		case MapData.WALL : 
-			return MapData.WALL;
-		default :
-			return result;
-		}
+	public boolean isLeftFinished() {
+		return leftFinished;
 	}
-	
-	/*
-	 * Check if the move is null.
-	 */
-	public static boolean nullMove(int direction){
-		if (direction == 0) 
-			return false;
-		else
-			return true;
-	}
-	
-	/*
-	 * Check if the Move is legal.
-	 */
-	public static boolean legalMove(int direction){
-		boolean retValue = true ;
-		int lastXMove = MUMap.aintDToM[direction][0];
-		int lastYMove = MUMap.aintDToM[direction][1];
-		
-		/*
-		 * If one player has seen the exit, he shouldn't be allowed to
-		 * step on it till the other player sees the exit. 
-		 */
-		if (!Info.endGameStrategy && !Mirrim.seeLeftExit && Info.LocalViewR [Info.LocalViewR.length / 2 + lastXMove][Info.LocalViewR.length / 2 + lastYMove] == MapData.EXIT)
-			retValue = false;
-		if (!Info.endGameStrategy && !Mirrim.seeRightExit && Info.LocalViewL[Info.LocalViewL.length / 2 + lastXMove][Info.LocalViewL.length / 2 + lastYMove]== MapData.EXIT)
-			retValue = false;
-		
-		if (Info.LocalViewR [Info.LocalViewR.length / 2 + lastXMove][Info.LocalViewR.length / 2 + lastYMove] == MapData.OBSTACLE)
-			retValue = false;
-		if (Info.LocalViewL [Info.LocalViewL.length / 2 + lastXMove][Info.LocalViewL.length / 2 + lastYMove] == MapData.OBSTACLE)
-			retValue = false;
 
-		return retValue;
+	public boolean isRightFinished() {
+		return rightFinished;
 	}
+	
 	
 	
 	/*
-	 * Returns a random move, except for a Null Move
+	 * TODO
+	 * Add more functions for a more intelligent exploration strategy. 
+	 * They can take any parameters from any of the classes written by us.
+	 * HOWEVER, IT IS IMPORTANT THAT THEY RETURN AN INTEGER.
+	 * 
+	 * The function may or may not be static - its not important.
 	 */
-	public static int randomMove(){
-		
-		Random rdm = new Random();
-		int d = 0;
-		int nextX = 0, nextY = 0;
-		
-		do {
-			nextX = rdm.nextInt(3);
-			nextY = rdm.nextInt(3);
-			
-			d = MUMap.aintMToD[nextX][nextY];
-		}while ( !nullMove(d) || !legalMove(d));
-		
-		return d;
-		
-	}
 }
 
-class Coord{
+class Coord implements Comparable<Coord>{
 	
-	int x,y;
+	int x,y, globalX, globalY;
+	char side;
 	
-	public Coord(int y, int x){
+	public Coord(int x, int y, char side){
 		this.y = y;
 		this.x = x;
+		this.side = side;
 	}
 	
+	//TODO should side be included in the equals?
 	public boolean equals(Coord c){
 		return y == c.getY() && x == c.getX();
 	}
+	
+	
 
 	public int getX() {
 		return x;
@@ -211,6 +197,31 @@ class Coord{
 
 	public int getY() {
 		return y;
+	}
+	
+	public char getSide(){
+		return side;
+	}
+
+	@Override
+	public int compareTo(Coord c) {
+		if(this.equals(c))
+			return 0;
+		if(side == 'l'){
+			globalX = Info.getCurrLX();
+			globalY = Info.getCurrLY();
+		}
+		else{
+			globalX = Info.getCurrRX();
+			globalY = Info.getCurrRY();
+		}
+		if(Math.sqrt(Math.pow(x - (99 + globalX), 2) + Math.pow(y - (99 + globalY), 2)) 
+				< Math.sqrt(Math.pow(c.getX() - (99 + globalX), 2) + Math.pow(c.getY() - (99 + globalY), 2))){
+			return -1;
+		}
+		else{
+			return 1;
+		}
 	}
 	
 }
