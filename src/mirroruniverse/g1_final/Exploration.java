@@ -13,6 +13,10 @@ public class Exploration {
 	private int[][] lArrPossiblyConnecting;
 	private int[][] rArrPossiblyConnecting;
 	private int globalX, globalY;
+	private ArrayList<Integer> actionPath;
+	private int nodeNumber;
+	
+	private int turns = 0; //for debugging - jumping to a specific turn
 
 
 	private ArrayList<Coord> lALPossiblyConnecting, rALPossiblyConnecting;
@@ -32,6 +36,9 @@ public class Exploration {
 		rightFinished = false;
 
 		target = null;
+		nodeNumber = 0;
+		actionPath = null;
+		
 	}
 
 	/*
@@ -88,10 +95,11 @@ public class Exploration {
 	 * Remove from list any squares not on the outside of our view radius (incl player square)
 	 */
 	public void updatePossibleConnects(int[][] lLocalView, int[][] rLocalView){
+		turns++;
 		int index = -1;
-		if(Info.lExited) 
+		if(Mirrim2.seeLeftExit) 
 			leftFinished = true;
-		if(Info.rExited) 
+		if(Mirrim2.seeRightExit) 
 			rightFinished = true;
 		if(!leftFinished){
 			//removing inner cells from list
@@ -155,6 +163,20 @@ public class Exploration {
 		}
 
 	}
+	
+	private boolean seenAllSquaresAround(int x, int y, int[][] global){
+		for(int i = -1; i <= 1; i++){
+			for(int j = 1; i <= 1; j++){
+				if(!(x + i < 0 || y + j < 0 || x + i >= global[0].length || j >= global.length)){
+					if(global[y + j][x + i] != 4){
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 
 
 	/*
@@ -165,6 +187,13 @@ public class Exploration {
 	public int explore(int[][] lLocalView, int[][] rLocalView, int lastDirection){
 		//TODO make more intelligent (both able to move, etc)
 		//if target is no longer possibly connecting, generate new target
+		
+		//for debugging to a specific turn
+		if(turns > 130){
+			int asdf = 5;
+		}
+		
+		//checking if somehow we are standing on the target
 		if(target != null){
 			if(!leftFinished){
 				if(target.getX() == Info.currLX && target.getY() == Info.currLY){
@@ -172,7 +201,7 @@ public class Exploration {
 					target = null;
 				}
 			}
-			else{
+			if(!rightFinished){
 				if(target.getX() == Info.currRX && target.getY() == Info.currRY){
 					rALPossiblyConnecting.remove(target);
 					target = null;
@@ -180,32 +209,34 @@ public class Exploration {
 			}
 		}
 
-		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))){
-			Collections.sort(lALPossiblyConnecting);
-			Collections.sort(rALPossiblyConnecting);
-			//TODO use this code for next time, it tries to pick the min move for any player
-			/*if(!leftFinished && !rightFinished){
-				if(lALPossiblyConnecting.get(0).compareTo(rALPossiblyConnecting.get(0)) < 0)
-					target = lALPossiblyConnecting.get(0);
-				else
-					target = rALPossiblyConnecting.get(0);
-			}
-			else if(!leftFinished)
-				target = lALPossiblyConnecting.get(0);
-			else
-				target = rALPossiblyConnecting.get(0);*/
-		}
-		Collections.sort(lALPossiblyConnecting);
-		Collections.sort(rALPossiblyConnecting);
 		int[][] mymap;
 		int i = 0;
 		int j = 0;
 		int mynext;
 		int[] nextstep;
-		
-		do{
-			if(!leftFinished && !rightFinished){
-				if(lALPossiblyConnecting.get(i).compareTo(rALPossiblyConnecting.get(j)) < 0){
+		//if have to find a new path
+		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))
+				 || nodeNumber >= actionPath.size() ){
+			Collections.sort(lALPossiblyConnecting);
+			Collections.sort(rALPossiblyConnecting);
+			
+			//finds new target by shortest euclidean distance 
+			do{
+				if(!leftFinished && !rightFinished){
+					if(lALPossiblyConnecting.get(i).compareTo(rALPossiblyConnecting.get(j)) < 0){
+						target = lALPossiblyConnecting.get(i);
+						mymap = Info.GlobalViewL;
+						globalX = Info.getCurrLX();
+						globalY = Info.getCurrLY();
+					}
+					else{
+						target = rALPossiblyConnecting.get(j);
+						mymap = Info.GlobalViewR;
+						globalX = Info.getCurrRX();
+						globalY = Info.getCurrRY();
+					}
+				}
+				else if(!leftFinished){
 					target = lALPossiblyConnecting.get(i);
 					mymap = Info.GlobalViewL;
 					globalX = Info.getCurrLX();
@@ -217,52 +248,38 @@ public class Exploration {
 					globalX = Info.getCurrRX();
 					globalY = Info.getCurrRY();
 				}
+	
+				//set new path
+				AStar_Single s = new AStar_Single(globalX, globalY, target.x, target.y, mymap);
+				actionPath = s.findPath().getActionPath();
+				nodeNumber = 0;
+				mynext = actionPath.get(nodeNumber);
+				nodeNumber++;
+				nextstep = MUMap.aintDToM[mynext];
+	
+				//dont step on exit checks
+				if(!leftFinished && Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2) {
+					System.out.println("LEFT fix");
+					i++;
+					continue;
+	
+				}
+				if(!rightFinished && Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2) {
+					System.out.println("RIGHT fix");
+					j++;
+					continue;
+				}
+	
 			}
-			else if(!leftFinished){
-				target = lALPossiblyConnecting.get(i);
-				mymap = Info.GlobalViewL;
-				globalX = Info.getCurrLX();
-				globalY = Info.getCurrLY();
-			}
-			else{
-				target = rALPossiblyConnecting.get(j);
-				mymap = Info.GlobalViewR;
-				globalX = Info.getCurrRX();
-				globalY = Info.getCurrRY();
-			}
-
-
-			AStar_Single s = new AStar_Single(globalX, globalY, target.x, target.y, mymap);
-			mynext = s.findPath().getActionPath().get(0);
-			nextstep = MUMap.aintDToM[mynext];
-
-
-			if(!leftFinished && Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2) {
-				System.out.println("LEFT fix");
-				i++;
-				continue;
-
-			}
-			if(!rightFinished && Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2) {
-				System.out.println("RIGHT fix");
-				j++;
-				continue;
-			}
-
+			//dont step on exit looping
+			while(Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2 || 
+					Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2);
 		}
-		while(Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2 || 
-				Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2);
+		else{
+			mynext = actionPath.get(nodeNumber);
+			nodeNumber++;
+		}
 		return mynext;
-		//		int directionToMove = 0;
-		////		
-		//		System.out.println((globalX - path.getX1()) + ", y " + (globalY - path.getY1()));
-		//		for(int b = 0; b<MUMap.aintDToM.length; b++) {
-		//			if(globalX - path.getX1() == MUMap.aintDToM[b][0] && globalY - path.getY1()  == MUMap.aintDToM[b][1])
-		//					directionToMove = b;
-		//		}
-		//			
-		//		
-		//		return directionToMove;
 	}
 
 	public boolean isLeftFinished() {
@@ -294,6 +311,14 @@ class Coord implements Comparable<Coord>{
 		this.y = y;
 		this.x = x;
 		this.side = side;
+		if(side == 'l'){
+			globalX = Info.getCurrLX();
+			globalY = Info.getCurrLY();
+		}
+		else{
+			globalX = Info.getCurrRX();
+			globalY = Info.getCurrRY();
+		}
 	}
 
 	//TODO should side be included in the equals?
@@ -317,21 +342,23 @@ class Coord implements Comparable<Coord>{
 	public char getSide(){
 		return side;
 	}
+	
 
+	public int getGlobalX() {
+		return globalX;
+	}
+
+	public int getGlobalY() {
+		return globalY;
+	}
+
+	//by euclidean distance
 	@Override
 	public int compareTo(Coord c) {
 		if(this.equals(c))
 			return 0;
-		if(side == 'l'){
-			globalX = Info.getCurrLX();
-			globalY = Info.getCurrLY();
-		}
-		else{
-			globalX = Info.getCurrRX();
-			globalY = Info.getCurrRY();
-		}
 		if(Math.sqrt(Math.pow(x - (globalX), 2) + Math.pow(y - (globalY), 2)) 
-				< Math.sqrt(Math.pow(c.getX() - (globalX), 2) + Math.pow(c.getY() - (globalY), 2))){
+				< Math.sqrt(Math.pow(c.getX() - (c.getGlobalX()), 2) + Math.pow(c.getY() - (c.getGlobalY()), 2))){
 			return -1;
 		}
 		else{
