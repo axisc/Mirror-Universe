@@ -97,6 +97,24 @@ public class Info {
 		if (side == 'l') LocalViewL = temp;
 		if (side == 'r') LocalViewR = temp;
 	}
+	
+	/*
+	 * This checks if the exploration is complete.
+	 * There is a problem - since we don't know the 
+	 * actual size of the board, we have to check 
+	 * for all sizes, and damn, thats really time 
+	 * consuming.
+	 * I'd really prefer a better way to search if
+	 * the exploration is complete.
+	 */
+	public static void isExplorationComplete(char side){
+		int viewToBeExamined[][];
+		if (side == 'l' ) viewToBeExamined = GlobalViewL;
+		else viewToBeExamined = GlobalViewR;
+		
+		
+		
+	}
 
 	public static void updateGlobalLocation (char side, int localView [][], int directionLastStep){
 		//		updateRelativeLocation ( side, directionLastStep);

@@ -41,10 +41,7 @@ public class Exploration {
 		
 	}
 
-	/*
-	 * Implements a random Move.Making sure 
-	 * that a 0 move is not returned. 
-	 */
+	
 
 	public static boolean isMoveLegal(int direction){
 		boolean retValue =  true;
@@ -69,7 +66,13 @@ public class Exploration {
 
 		else return true;
 	}
-
+	
+	/*
+	 * Implements a random Move.Making sure 
+	 * that a 0 move is not returned. 
+	 * Also ensures that a legal move is 
+	 * returned.
+	 */
 	public static int randomMove (){
 
 		Random rdmTemp = new Random();
@@ -290,8 +293,7 @@ public class Exploration {
 		return rightFinished;
 	}
 
-
-
+	
 	/*
 	 * TODO
 	 * Add more functions for a more intelligent exploration strategy. 

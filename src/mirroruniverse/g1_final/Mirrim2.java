@@ -45,7 +45,7 @@ public class Mirrim2 implements Player {
 		 * If both players see their exit, activate endGameStrategy
 		 */
 		if (seeLeftExit && seeRightExit && !Info.endGameStrategy){
-			System.out.println("Time for A*");
+			if (Config.DEBUG) System.out.println("Time for A*");
 			Info.activateEndGameStrategy();
 		}
 		
