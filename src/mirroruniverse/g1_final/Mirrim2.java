@@ -75,6 +75,7 @@ public class Mirrim2 implements Player {
 				directionForThisRound = path.remove(0);
 				directionForPreviousRound = directionForThisRound;
 				System.out.println(directionForThisRound);
+				Info.addToListOfAllMoves(directionForThisRound);
 				return directionForThisRound;
 			
 			
@@ -89,6 +90,8 @@ public class Mirrim2 implements Player {
 		Info.updateRelativeLocation('r', directionForThisRound);
 		
 		directionForPreviousRound = directionForThisRound;
+		if (Config.DEBUG) System.out.println("THE DIRECTION FOR THIS ROUND IS : " + directionForThisRound);
+		Info.addToListOfAllMoves(directionForThisRound);
 		return directionForThisRound;	
 	}
 	

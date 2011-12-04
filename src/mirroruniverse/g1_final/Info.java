@@ -23,6 +23,7 @@ public class Info {
 	static ArrayList<Node> searchGraph = new ArrayList<Node>();
 	static ArrayList<Node> open = new ArrayList<Node>();
 	static ArrayList<Node> closed = new ArrayList<Node>();
+	static ArrayList<Integer> listOfAllMoves;
 	//	static ArrayList <Node> m = new ArrayList<Node>();
 	static ArrayList <Node> came_from = new ArrayList<Node>();
 	public static final int[][] aintDToM = { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 },  { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } };
@@ -31,9 +32,33 @@ public class Info {
 
 	public static void incrementCount(){
 		count ++;
-		if (Config.DEBUG)
+		if (Config.DEBUG){
 			System.out.println("Step number " + count);
+			System.out.println("Printing Left Global View");
+			printView(GlobalViewL,'l');
+			System.out.println();
+			System.out.println("Printing Right Global View");
+			printView(GlobalViewR,'r');
+		}
 	}
+	
+	public static void printView (int view [][], char side){
+		int count = 0;
+		for (int i = 0; i < view.length ; i++){
+			count = 0;
+			for (int j = 0; j< view.length ; j++){
+				if (view [i][j] == 4) {
+					System.out.print("");count++;
+				}
+				else if (side == 'l' && i == Info.currLY && j == Info.currLX) System.out.print(MapData.PLAYERPOSITION + " ");
+				else if (side == 'r' && i == Info.currRY && j == Info.currRX) System.out.print(MapData.PLAYERPOSITION + " ");
+				else System.out.print(view[i][j] + " ");
+				}
+			if (count != view.length) System.out.println();
+		}
+		
+	}
+	
 	public static void InitInfo(int visibilityRadiusL, int visibilityRadiusR){
 		LocalViewL = new int [visibilityRadiusL] [visibilityRadiusL];
 		LocalViewR = new int [visibilityRadiusR] [visibilityRadiusR];
@@ -46,10 +71,16 @@ public class Info {
 		rExited = false;
 		currRX = GlobalViewR.length / 2; currLX = GlobalViewL.length / 2; currRY = GlobalViewR.length / 2;	currLY = GlobalViewL.length / 2;
 
-		Config.setDEBUG(false);
+		Config.setDEBUG(true);
 		for (int i=0; i<GlobalViewR.length; i++)
 			for (int j=0; j<GlobalViewR.length; j++)
 				GlobalViewL[i][j] = GlobalViewR [i][j] = MapData.UNKNOWN;
+		
+		listOfAllMoves =  new ArrayList<Integer>();
+	}
+	
+	public static void addToListOfAllMoves(int direction){
+		listOfAllMoves.add(direction);
 	}
 
 	public static void activateEndGameStrategy (){

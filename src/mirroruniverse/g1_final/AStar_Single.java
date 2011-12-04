@@ -51,14 +51,16 @@ public class AStar_Single {
 			ArrayList<Node_Single> nexts = successors(queue.poll());
 			queue.addAll(nexts);
 		}
-		//System.out.println("Done");
+		if (Config.DEBUG) System.out.println("Done");
 		if(queue.isEmpty()){
-			//System.out.println("Empty :(");
+			if (Config.DEBUG) System.out.println("Empty :(");
 			//exitsFound();
 			return null;
 		} else {
-			//System.out.println("Found :)");
-			//System.out.println(queue.peek());
+			if (Config.DEBUG){
+				System.out.println("Found :)");
+				System.out.println(queue.peek());
+			}
 			return queue.peek();
 		}
 	}

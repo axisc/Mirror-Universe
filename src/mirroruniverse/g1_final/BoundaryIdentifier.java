@@ -95,4 +95,14 @@ public class BoundaryIdentifier {
 		}
 		return true;
 	}
+
+	public static boolean identifyCorners (char side){
+		int tempLocalView [][];
+		if (side == 'l') tempLocalView = Info.GlobalViewL;
+		else if (side == 'r') tempLocalView = Info.GlobalViewR;
+		
+		// For top-left corner.
+		
+		return false;
+	}
 }

@@ -1,2 +1,2 @@
-30, 30, 3, -11, maps/g1Maps/secondbigmap1.txt, 6
-30, 30, 3, -12, maps/g1Maps/secondbigmap2.txt, 7
+30, 30, 5, -11, maps/g7_map1.txt, 6
+30, 30, 5, -12, maps/g7_map2.txt, 7

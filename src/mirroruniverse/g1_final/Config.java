@@ -1,7 +1,7 @@
 package mirroruniverse.g1_final;
 
 public class Config {
-	public static boolean DEBUG =  false;
+	public static boolean DEBUG = true;
 	
 	public static final int MAX_SIZE = 50;
 	public static final int MAX_MAP_SIZE = 2*MAX_SIZE;
