@@ -1,2 +1,2 @@
-30, 30, 3, -11, maps/g1Maps/secondbigmap1.txt, 6
-30, 30, 3, -12, maps/g1Maps/secondbigmap2.txt, 7
+49, 49, 3, -135, maps/PipeMaze_A.txt, 28
+30, 30, 3, -146, maps/PipeMaze_B.txt, 91

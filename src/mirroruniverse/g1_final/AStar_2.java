@@ -177,6 +177,7 @@ public class AStar_2 {
 			System.out.println("Found :)");
 			System.out.println(queue.peek());
 			System.out.println(queue.peek().getActionPath());
+			Mirrim2.minMovesOut = queue.peek().getSelfDegree();
 			return queue.peek().getActionPath();
 		}
 	}

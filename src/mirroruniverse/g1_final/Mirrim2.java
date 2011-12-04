@@ -9,7 +9,9 @@ public class Mirrim2 implements Player {
 
 	static boolean initialized = false;
 	static boolean seeLeftExit = false, seeRightExit = false;
+	static boolean leftExitPath = false, rightExitPath = false;
 	static int directionForThisRound = 0 , directionForPreviousRound = 0;
+	static int minMovesOut = Integer.MAX_VALUE;
 	ArrayList<Integer> path = new ArrayList<Integer>();
 	AStar_2 starTester ;
 	static Node exitL, exitR;
@@ -37,26 +39,27 @@ public class Mirrim2 implements Player {
 		
 		ex.updatePossibleConnects(aintViewL, aintViewR);
 		
+		boolean newInfoThisTurn = false;
 		// TODO Update Global Location
-		Info.updateGlobalLocation('l', aintViewL, directionForPreviousRound);
-		Info.updateGlobalLocation('r', aintViewR, directionForPreviousRound);
+		newInfoThisTurn = Info.updateGlobalLocation('l', aintViewL, directionForPreviousRound);
+		newInfoThisTurn = newInfoThisTurn || Info.updateGlobalLocation('r', aintViewR, directionForPreviousRound);
 		
 		/*
 		 * If both players see their exit, activate endGameStrategy
 		 */
-		if (seeLeftExit && seeRightExit && !Info.endGameStrategy){
-			System.out.println("Time for A*");
-			Info.activateEndGameStrategy();
-		}
-		
-		/*
-		 * If end Game strategy kicks in, call A* and use the path.
-		 */
-		if (Info.endGameStrategy){
-			if (path.isEmpty()){
-				// TODO Generate Path
-			
-				if (Config.DEBUG) System.out.println("End Game Strategy entered");
+		if (seeLeftExit && seeRightExit && !Info.endGameStrategy && newInfoThisTurn){
+			if(!leftExitPath){
+				AStar_Single astar = new AStar_Single(Info.currLX, Info.currLY, exitL.x, exitL.y, Info.GlobalViewL);
+				Node_Single node = astar.findPath();
+				leftExitPath = node != null;
+			}
+			if(!rightExitPath){
+				AStar_Single astar = new AStar_Single(Info.currRX, Info.currRY, exitR.x, exitR.y, Info.GlobalViewR);
+				Node_Single node = astar.findPath();
+				rightExitPath = node != null;
+			}
+			if(leftExitPath && rightExitPath){
+				if (Config.DEBUG) System.out.println("Time for A*");
 				Node startPlayerPositionL = new Node(Info.currLX, Info.currLY);
 				Node startPlayerPositionR = new Node(Info.currRX, Info.currRY);
 				
@@ -68,15 +71,23 @@ public class Mirrim2 implements Player {
 				starTester.setExit2(exitR.getX(), exitR.getY());
 				
 				path = starTester.findPath();
+				if(minMovesOut == 0 || (ex.leftFinished && ex.rightFinished))
+					Info.activateEndGameStrategy();
 				
 			}
+		}
+		
+		/*
+		 * If end Game strategy kicks in, call A* and use the path.
+		 */
+		if (Info.endGameStrategy){
+
 				// TODO Follow path
 				if (Config.DEBUG) System.out.print("Following Path by A*  Direction = ");
 				directionForThisRound = path.remove(0);
 				directionForPreviousRound = directionForThisRound;
 				System.out.println(directionForThisRound);
 				return directionForThisRound;
-			
 			
 		}
 		else{

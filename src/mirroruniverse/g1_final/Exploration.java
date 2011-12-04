@@ -97,10 +97,18 @@ public class Exploration {
 	public void updatePossibleConnects(int[][] lLocalView, int[][] rLocalView){
 		turns++;
 		int index = -1;
-		if(Mirrim2.seeLeftExit) 
-			leftFinished = true;
-		if(Mirrim2.seeRightExit) 
-			rightFinished = true;
+		
+		
+		
+//		if(Mirrim2.seeLeftExit) 
+//			leftFinished = true;
+//		if(Mirrim2.seeRightExit) 
+//			rightFinished = true;
+		
+		
+		
+		
+		
 		if(!leftFinished){
 			//removing inner cells from list
 			for(int i = 1; i < lLocalView.length - 1; i++){
@@ -214,6 +222,7 @@ public class Exploration {
 		int j = 0;
 		int mynext;
 		int[] nextstep;
+		char chosenSide;
 		//if have to find a new path
 		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))
 				 || nodeNumber >= actionPath.size() ){
@@ -228,12 +237,14 @@ public class Exploration {
 						mymap = Info.GlobalViewL;
 						globalX = Info.getCurrLX();
 						globalY = Info.getCurrLY();
+						chosenSide = 'l';
 					}
 					else{
 						target = rALPossiblyConnecting.get(j);
 						mymap = Info.GlobalViewR;
 						globalX = Info.getCurrRX();
 						globalY = Info.getCurrRY();
+						chosenSide = 'r';
 					}
 				}
 				else if(!leftFinished){
@@ -241,12 +252,14 @@ public class Exploration {
 					mymap = Info.GlobalViewL;
 					globalX = Info.getCurrLX();
 					globalY = Info.getCurrLY();
+					chosenSide = 'l';
 				}
 				else{
 					target = rALPossiblyConnecting.get(j);
 					mymap = Info.GlobalViewR;
 					globalX = Info.getCurrRX();
 					globalY = Info.getCurrRY();
+					chosenSide = 'r';
 				}
 	
 				//set new path
@@ -258,18 +271,15 @@ public class Exploration {
 				nextstep = MUMap.aintDToM[mynext];
 	
 				//dont step on exit checks
-				if(!leftFinished && Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2) {
-					System.out.println("LEFT fix");
-					i++;
+				if(Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2 ||
+						Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2) {
+					if(chosenSide == 'l')
+						i++;
+					else
+						j++;
 					continue;
 	
 				}
-				if(!rightFinished && Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2) {
-					System.out.println("RIGHT fix");
-					j++;
-					continue;
-				}
-	
 			}
 			//dont step on exit looping
 			while(Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2 || 

@@ -100,7 +100,8 @@ public class Info {
 
 	public static void updateGlobalLocation (char side, int localView [][], int directionLastStep){
 		//		updateRelativeLocation ( side, directionLastStep);
-
+		//TODO return bool for if any new map uncovered
+		
 		int relativePlayerPosX = localView.length /2;
 		int relativePlayerPosY = localView.length /2;
 		for (int i = -localView.length/2 ; i<=localView.length/2 ; i++)
