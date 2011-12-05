@@ -128,8 +128,8 @@ public class Mirrim implements Player {
 		 * Else move randomly, and explore
 		 */
 		else {
-		
-		directionForThisRound = Exploration.randomMove();
+		System.out.println("Random move");
+		//directionForThisRound = Exploration.randomMove();
 		}
 		
 //		if ( aintViewL[aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][1]][aintViewL.length / 2 + MUMap.aintDToM[directionForThisRound][0]] != 1){

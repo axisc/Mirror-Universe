@@ -15,8 +15,18 @@ public class Exploration {
 	private int globalX, globalY;
 	private ArrayList<Integer> actionPath;
 	private int nodeNumber;
-	
-	private int turns = 0; //for debugging - jumping to a specific turn
+	int[][] mymap;
+	char chosenSide, badPlayer;
+	Node_NonExit nodeNonExit;
+	Node_Single nodeSingle;
+
+
+	boolean backtracking = false;
+
+	int next = 0; //for backtracking keeping path state
+
+
+	int turns = 0; //for debugging - jumping to a specific turn
 
 
 	private ArrayList<Coord> lALPossiblyConnecting, rALPossiblyConnecting;
@@ -34,26 +44,33 @@ public class Exploration {
 
 		leftFinished = false;
 		rightFinished = false;
+		badPlayer = 'l';
 
 		target = null;
 		nodeNumber = 0;
 		actionPath = null;
-		
+		nodeNonExit = null;
+		nodeSingle = null;
+
 	}
 
 	
 
-	public static boolean isMoveLegal(int direction){
+	public boolean isMoveLegal(int direction){
 		boolean retValue =  true;
 		int lastXMove = MUMap.aintDToM [direction][0];
 		int lastYMove = MUMap.aintDToM [direction][1];
 
-		if (!Mirrim.seeLeftExit && Info.LocalViewR [Info.LocalViewR.length / 2 + lastYMove][Info.LocalViewR.length / 2 + lastXMove] == MapData.EXIT)
+		if (Info.LocalViewR [Info.LocalViewR.length / 2 + lastYMove][Info.LocalViewR.length / 2 + lastXMove] == MapData.EXIT){
 			retValue = false;
-		if (!Mirrim.seeRightExit && Info.LocalViewL[Info.LocalViewL.length / 2 + lastYMove][Info.LocalViewL.length / 2 + lastXMove]== MapData.EXIT)
+			badPlayer = 'r';
+		}
+		if (Info.LocalViewL[Info.LocalViewL.length / 2 + lastYMove][Info.LocalViewL.length / 2 + lastXMove]== MapData.EXIT){
 			retValue = false;
+			badPlayer = 'l';
+		}
 
-		System.out.println("Returning value " + retValue);
+		if (Config.DEBUG) System.out.println("Returning value " + retValue);
 		return retValue;
 	}
 
@@ -66,6 +83,7 @@ public class Exploration {
 
 		else return true;
 	}
+<<<<<<< HEAD
 	
 	/*
 	 * Implements a random Move.Making sure 
@@ -91,6 +109,9 @@ public class Exploration {
 		return d;
 
 	}
+=======
+
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 
 	/*
 	 * Look at view from each player and determine which are the newly explored squares
@@ -100,10 +121,18 @@ public class Exploration {
 	public void updatePossibleConnects(int[][] lLocalView, int[][] rLocalView){
 		turns++;
 		int index = -1;
-		if(Mirrim2.seeLeftExit) 
-			leftFinished = true;
-		if(Mirrim2.seeRightExit) 
-			rightFinished = true;
+
+
+
+		//		if(Mirrim2.seeLeftExit) 
+		//			leftFinished = true;
+		//		if(Mirrim2.seeRightExit) 
+		//			rightFinished = true;
+
+
+
+
+
 		if(!leftFinished){
 			//removing inner cells from list
 			for(int i = 1; i < lLocalView.length - 1; i++){
@@ -166,7 +195,7 @@ public class Exploration {
 		}
 
 	}
-	
+
 	private boolean seenAllSquaresAround(int x, int y, int[][] global){
 		for(int i = -1; i <= 1; i++){
 			for(int j = 1; i <= 1; j++){
@@ -179,7 +208,7 @@ public class Exploration {
 		}
 		return true;
 	}
-	
+
 
 
 	/*
@@ -190,12 +219,14 @@ public class Exploration {
 	public int explore(int[][] lLocalView, int[][] rLocalView, int lastDirection){
 		//TODO make more intelligent (both able to move, etc)
 		//if target is no longer possibly connecting, generate new target
-		
+
 		//for debugging to a specific turn
-		if(turns > 130){
+		if(turns > 60){
 			int asdf = 5;
+			asdf++;
 		}
 		
+
 		//checking if somehow we are standing on the target
 		if(target != null){
 			if(!leftFinished){
@@ -212,75 +243,153 @@ public class Exploration {
 			}
 		}
 
-		int[][] mymap;
+
 		int i = 0;
 		int j = 0;
-		int mynext;
-		int[] nextstep;
+		int mynext = 0;
 		//if have to find a new path
+		//		if(target == null){
+		//			backtracking = false;
+		//		}
 		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))
-				 || nodeNumber >= actionPath.size() ){
+				|| nodeNumber >= actionPath.size() ){
 			Collections.sort(lALPossiblyConnecting);
 			Collections.sort(rALPossiblyConnecting);
-			
+
 			//finds new target by shortest euclidean distance 
 			do{
-				if(!leftFinished && !rightFinished){
-					if(lALPossiblyConnecting.get(i).compareTo(rALPossiblyConnecting.get(j)) < 0){
-						target = lALPossiblyConnecting.get(i);
-						mymap = Info.GlobalViewL;
-						globalX = Info.getCurrLX();
-						globalY = Info.getCurrLY();
+				if((i >= lALPossiblyConnecting.size() && j >= rALPossiblyConnecting.size()) ){
+					System.out.println("BACKTRACKING");
+					backtracking = true;
+					i = 0;
+					j = 0;
+				}
+
+				if(!(Mirrim2.leftExitPath && Mirrim2.rightExitPath)){
+					if(Mirrim2.leftExitPath){
+						chooseRightSide(j);
+						i = lALPossiblyConnecting.size();
+					}
+					else if(Mirrim2.rightExitPath){
+						chooseLeftSide(i);
+						j = rALPossiblyConnecting.size();
 					}
 					else{
-						target = rALPossiblyConnecting.get(j);
-						mymap = Info.GlobalViewR;
-						globalX = Info.getCurrRX();
-						globalY = Info.getCurrRY();
+						compareSides(i, j);
+					}
+					if(!backtracking){
+						nodeNonExit = null;
+						AStar_Single s = new AStar_Single(globalX, globalY, target.x, target.y, mymap);
+						nodeSingle = s.findNonExitPath();
+						if(nodeSingle == null){
+							if(chosenSide == 'l')
+								i++;
+							else
+								j++;
+							continue;
+						}
+						actionPath = nodeSingle.getActionPath();
+					}
+					else{
+						nodeSingle = null;
+						AStar_NonExit s;
+						//set new path
+						if(chosenSide == 'l'){
+							s = new AStar_NonExit(Info.currLX, Info.currLY, target.x, target.y, 
+									Info.currRX, Info.currRY, Info.GlobalViewL, Info.GlobalViewR);
+						}
+						else{
+							s = new AStar_NonExit(Info.currRX, Info.currRY, target.x, target.y, 
+									Info.currLX, Info.currLY, Info.GlobalViewR, Info.GlobalViewL);
+						}
+						nodeNonExit = s.findNonExitPath();
+
+						if(nodeNonExit == null){
+							if(chosenSide == 'l')
+								i++;
+							else
+								j++;
+							continue;
+						}
+						actionPath = nodeNonExit.getActionPath();
 					}
 				}
-				else if(!leftFinished){
-					target = lALPossiblyConnecting.get(i);
-					mymap = Info.GlobalViewL;
-					globalX = Info.getCurrLX();
-					globalY = Info.getCurrLY();
-				}
 				else{
-					target = rALPossiblyConnecting.get(j);
-					mymap = Info.GlobalViewR;
-					globalX = Info.getCurrRX();
-					globalY = Info.getCurrRY();
+					nodeSingle = null;
+					if(leftFinished){
+						chooseRightSide(j);
+						i = lALPossiblyConnecting.size();
+					}
+					else if(rightFinished){
+						chooseLeftSide(i);
+						j = rALPossiblyConnecting.size();
+					}
+					else{
+						compareSides(i, j);
+					}
+					if(!backtracking){
+						nodeNonExit = null;
+						AStar_Single s = new AStar_Single(globalX, globalY, target.x, target.y, mymap);
+						nodeSingle = s.findNonExitPath();
+						if(nodeSingle == null){
+							if(chosenSide == 'l')
+								i++;
+							else
+								j++;
+							continue;
+						}
+						actionPath = nodeSingle.getActionPath();
+					}
+					else{
+						nodeSingle = null;
+						AStar_NonExit s;
+						//set new path
+						if(chosenSide == 'l'){
+							s = new AStar_NonExit(Info.currLX, Info.currLY, target.x, target.y, 
+									Info.currRX, Info.currRY, Info.GlobalViewL, Info.GlobalViewR);
+						}
+						else{
+							s = new AStar_NonExit(Info.currRX, Info.currRY, target.x, target.y, 
+									Info.currLX, Info.currLY, Info.GlobalViewR, Info.GlobalViewL);
+						}
+						nodeNonExit = s.findNonExitPath();
+
+						if(nodeNonExit == null){
+							if(chosenSide == 'l')
+								i++;
+							else
+								j++;
+							continue;
+						}
+						actionPath = nodeNonExit.getActionPath();
+					}
 				}
-	
-				//set new path
-				AStar_Single s = new AStar_Single(globalX, globalY, target.x, target.y, mymap);
-				actionPath = s.findPath().getActionPath();
+
+
 				nodeNumber = 0;
 				mynext = actionPath.get(nodeNumber);
 				nodeNumber++;
-				nextstep = MUMap.aintDToM[mynext];
-	
+
 				//dont step on exit checks
-				if(!leftFinished && Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2) {
-					System.out.println("LEFT fix");
-					i++;
-					continue;
-	
-				}
-				if(!rightFinished && Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2) {
-					System.out.println("RIGHT fix");
-					j++;
+				if(!isMoveLegal(mynext)) {
+					if(chosenSide == 'l')
+						i++;
+					else
+						j++;
 					continue;
 				}
-	
 			}
 			//dont step on exit looping
-			while(Info.GlobalViewR[Info.currRY + nextstep[1]][Info.currRX + nextstep[0]] == 2 || 
-					Info.GlobalViewL[Info.currLY + nextstep[1]][Info.currLX + nextstep[0]] == 2);
+			while((nodeNonExit == null && nodeSingle == null) || !isMoveLegal(mynext));
 		}
 		else{
+			//check for accidental exit
 			mynext = actionPath.get(nodeNumber);
 			nodeNumber++;
+			if(!isMoveLegal(mynext)){
+				target = null;
+				return explore(lLocalView, rLocalView, lastDirection);
+			}
 		}
 		return mynext;
 	}
@@ -293,7 +402,45 @@ public class Exploration {
 		return rightFinished;
 	}
 
+<<<<<<< HEAD
 	
+=======
+	private void chooseRightSide(int j){
+		target = rALPossiblyConnecting.get(j);
+		mymap = Info.GlobalViewR;
+		globalX = Info.getCurrRX();
+		globalY = Info.getCurrRY();
+		chosenSide = 'r';
+	}
+
+	private void chooseLeftSide(int i){
+		target = lALPossiblyConnecting.get(i);
+		mymap = Info.GlobalViewL;
+		globalX = Info.getCurrLX();
+		globalY = Info.getCurrLY();
+		chosenSide = 'l';
+	}
+
+	private void compareSides(int i, int j){
+		if(i >= lALPossiblyConnecting.size()){
+			chooseLeftSide(i);
+		}
+		else if(j >= rALPossiblyConnecting.size()){
+			chooseRightSide(j);
+		}
+		else{
+			if(lALPossiblyConnecting.get(i).compareTo(rALPossiblyConnecting.get(j)) < 0){
+				chooseLeftSide(i);
+			}
+			else{
+				chooseRightSide(j);
+			}
+		}
+	}
+
+
+
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 	/*
 	 * TODO
 	 * Add more functions for a more intelligent exploration strategy. 
@@ -344,7 +491,7 @@ class Coord implements Comparable<Coord>{
 	public char getSide(){
 		return side;
 	}
-	
+
 
 	public int getGlobalX() {
 		return globalX;
@@ -359,6 +506,14 @@ class Coord implements Comparable<Coord>{
 	public int compareTo(Coord c) {
 		if(this.equals(c))
 			return 0;
+		if(side == 'l'){
+			globalX = Info.getCurrLX();
+			globalY = Info.getCurrLY();
+		}
+		else{
+			globalX = Info.getCurrRX();
+			globalY = Info.getCurrRY();
+		}
 		if(Math.sqrt(Math.pow(x - (globalX), 2) + Math.pow(y - (globalY), 2)) 
 				< Math.sqrt(Math.pow(c.getX() - (c.getGlobalX()), 2) + Math.pow(c.getY() - (c.getGlobalY()), 2))){
 			return -1;

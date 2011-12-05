@@ -88,7 +88,67 @@ public class AStar_Single {
 				y1 = n.getY1() + yChange;
 				
 				try {
-					if (map[y1][x1] == 1 || map[y1][x1] == -5) {
+					if (map[y1][x1] == 1 || map[y1][x1] == 4) {
+						x1 -= xChange;
+						y1 -= yChange;
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					x1 -= xChange;
+					y1 -= yChange;
+				}
+				Node_Single toAdd = new Node_Single(x1, y1, n, indexOfAction[action]);
+				
+				if(!n.equals(toAdd) && shouldIAdd(toAdd)){
+					nexts.add(toAdd);
+				}
+				++action;
+			}
+		}
+		
+		return nexts;
+	}
+	
+	public Node_Single findNonExitPath(){
+		while(!queue.isEmpty() && queue.peek().getValue() != queue.peek().getDepth()){
+			ArrayList<Node_Single> nexts = nonExitSuccessors(queue.poll());
+			queue.addAll(nexts);
+		}
+		//System.out.println("Done");
+		if(queue.isEmpty()){
+			//System.out.println("Empty :(");
+			//exitsFound();
+			return null;
+		} else {
+			//System.out.println("Found :)");
+			//System.out.println(queue.peek());
+			return queue.peek();
+		}
+	}
+	
+	// Will generate the possible next moves 
+	private ArrayList<Node_Single> nonExitSuccessors(Node_Single n){
+		closed.add(n);
+		int x1;
+		int y1;
+		int action = 0;
+		//int[] indexOfAction = {6,5,4,7,0,3,8,1,2};
+		int[] indexOfAction = {4,5,6,3,0,7,2,1,8};
+		ArrayList<Node_Single> nexts = new ArrayList<Node_Single>();
+		
+		for(int xChange = -1; xChange < 2; ++xChange){
+			for(int yChange = -1; yChange < 2; ++yChange){
+				
+				// Dont want to add the current Node_Single to the path
+				if(xChange == 0 && yChange == 0){
+					++action;
+					continue;
+				}
+				
+				x1 = n.getX1() + xChange;
+				y1 = n.getY1() + yChange;
+				
+				try {
+					if (map[y1][x1] == 1 || map[y1][x1] == 4 || map[y1][x1] == 2) {
 						x1 -= xChange;
 						y1 -= yChange;
 					}

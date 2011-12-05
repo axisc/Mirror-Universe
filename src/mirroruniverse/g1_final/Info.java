@@ -29,6 +29,7 @@ public class Info {
 	public static final int[][] aintDToM = { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 },  { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } };
 	static Node startL, endL, startR, endR;
 	static Map<Node, Double> tentCost = new HashMap<Node, Double>();
+	static ArrayList<Integer> listOfAllMoves = new ArrayList<Integer>();
 
 	public static void incrementCount(){
 		count ++;
@@ -85,6 +86,38 @@ public class Info {
 
 	public static void activateEndGameStrategy (){
 		endGameStrategy =  true;
+	}
+	
+	public static void addToListOfAllMoves(int direction){
+		listOfAllMoves.add(direction);
+	}
+
+	public static void printView (int view [][], char side){
+		int count = 0;
+		for (int i = 0; i < view.length ; i++){
+			count = 0;
+			for (int j = 0; j< view.length ; j++){
+				if (view [i][j] == 4) {
+					System.out.print("");count++;
+				}
+				else if (side == 'l' && i == Info.currLY && j == Info.currLX) System.out.print(MapData.PLAYERPOSITION + " ");
+				else if (side == 'r' && i == Info.currRY && j == Info.currRX) System.out.print(MapData.PLAYERPOSITION + " ");
+				else System.out.print(view[i][j] + " ");
+			}
+			if (count != view.length) System.out.println();
+		}
+
+	}
+
+	public static boolean willPlayerMove(char side, int direction){
+		int tempView [][] = null;
+		if (side == 'l') tempView = LocalViewL;
+		else if (side == 'r') tempView = LocalViewR;
+		
+		if (tempView [tempView.length/2 + MUMap.aintDToM[direction][1]] [tempView.length/2 + MUMap.aintDToM[direction][0]] !=1 ){
+			return true;
+		}
+		return false;
 	}
 
 	public static void updateRelativeLocation ( char side, int directionLastStep){
@@ -150,26 +183,43 @@ public class Info {
 	public static boolean updateGlobalLocation (char side, int localView [][], int directionLastStep){
 		//		updateRelativeLocation ( side, directionLastStep);
 
+<<<<<<< HEAD
 		boolean seenNewLeftTerrority = false;
 		boolean seenNewRightTerrority = false;
+=======
+		boolean seenNewTerrority = false;
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 		int relativePlayerPosX = localView.length /2;
 		int relativePlayerPosY = localView.length /2;
-		for (int i = -localView.length/2 ; i<=localView.length/2 ; i++)
+		for (int i = -localView.length/2 ; i<=localView.length/2 ; i++){
 			for (int j = -localView[i+relativePlayerPosX].length/2 ; j<=localView[i+relativePlayerPosX].length/2 ; j++){
 				if (side == 'l'){
 					if (!legalPosition(i+ currLX /*+ relativePlayerPosX*/) || !legalPosition(j+currLY /*+ relativePlayerPosY*/)) continue;
+<<<<<<< HEAD
 					else if (GlobalViewL[j+currLY /*+ relativePlayerPosY*/][i+ currLX /*+ relativePlayerPosX */] 
 					                                                    !=	localView  [j+relativePlayerPosY][i+relativePlayerPosX]){
 						GlobalViewL[j+currLY /*+ relativePlayerPosY*/][i+ currLX /*+ relativePlayerPosX */] 
                                 =	localView  [j+relativePlayerPosY][i+relativePlayerPosX];
 						
 						seenNewLeftTerrority = true;
+=======
+					else{ 
+						if (GlobalViewL[j+currLY /*+ relativePlayerPosY*/][i+ currLX /*+ relativePlayerPosX */] 
+						                                                   !=	localView  [j+relativePlayerPosY][i+relativePlayerPosX]){
+							seenNewTerrority = true;
+						}
+						GlobalViewL[j+currLY /*+ relativePlayerPosY*/][i+ currLX /*+ relativePlayerPosX */] 
+						                                               =	localView  [j+relativePlayerPosY][i+relativePlayerPosX];
+						
+						
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 					}
 					if (localView  [j+relativePlayerPosY][i+relativePlayerPosX] == MapData.EXIT && !Mirrim2.seeLeftExit){
 						Mirrim2.exitL = new Node(i+currLX, j+currLY);
 						Mirrim2.seeLeftExit = true;
 						System.out.println("LEFT");
 					}
+<<<<<<< HEAD
 					
 					return seenNewLeftTerrority;
 				}
@@ -180,6 +230,20 @@ public class Info {
 						GlobalViewR[j+currRY /*+ relativePlayerPosY*/][i+ currRX /*+ relativePlayerPosX*/ ]
                                 =	localView  [j+relativePlayerPosY][i+relativePlayerPosX];
 						seenNewRightTerrority = true;
+=======
+
+				}
+				else if (side == 'r'){
+					if (!legalPosition(i+ currRX /*+ relativePlayerPosX*/) || !legalPosition(j+currRY /*+ relativePlayerPosY*/)) continue;
+					else{ 
+						if (GlobalViewR[j+currRY /*+ relativePlayerPosY*/][i+ currRX /*+ relativePlayerPosX*/ ]
+						                                                   !=	localView  [j+relativePlayerPosY][i+relativePlayerPosX]){
+							seenNewTerrority = true;
+						}
+						GlobalViewR[j+currRY /*+ relativePlayerPosY*/][i+ currRX /*+ relativePlayerPosX*/ ]
+						                                               =	localView  [j+relativePlayerPosY][i+relativePlayerPosX];
+						
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 					}
 
 					if (localView  [j+relativePlayerPosY][i+relativePlayerPosX] == MapData.EXIT && !Mirrim2.seeRightExit){
@@ -187,6 +251,7 @@ public class Info {
 						Mirrim2.seeRightExit = true;
 						System.out.println("RIGHT");
 					}
+<<<<<<< HEAD
 					
 					return seenNewRightTerrority;
 				}
@@ -194,6 +259,14 @@ public class Info {
 			}
 
 		return false;
+=======
+
+				}
+
+			}
+		}
+		return seenNewTerrority;
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 
 	}
 

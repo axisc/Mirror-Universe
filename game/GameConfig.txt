@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 30, 30, 5, -11, maps/g7_map1.txt, 6
 30, 30, 5, -12, maps/g7_map2.txt, 7
+=======
+49, 49, 1, -135, maps/g1Maps/bigmap1.txt, 28
+30, 30, 1, -146, maps/g1Maps/bigmap2.txt, 91
+>>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
