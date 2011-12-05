@@ -12,10 +12,12 @@ public class Mirrim2 implements Player {
 	static boolean leftExitPath = false, rightExitPath = false;
 	static int directionForThisRound = 0 , directionForPreviousRound = 0;
 	static int minMovesOut = Integer.MAX_VALUE;
-	ArrayList<Integer> path = new ArrayList<Integer>();
-	AStar_2 starTester ;
+	private ArrayList<Integer> path = new ArrayList<Integer>();
+	private AStar_2 starTester;
 	static Node exitL, exitR;
 	Exploration ex;
+	Info myInfo;
+	ArrayList<Integer> allPrevMoves = new ArrayList<Integer>();
 	
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
@@ -42,37 +44,42 @@ public class Mirrim2 implements Player {
 		boolean newInfoThisTurn = false;
 		// TODO Update Global Location
 		newInfoThisTurn = Info.updateGlobalLocation('l', aintViewL, directionForPreviousRound);
-		newInfoThisTurn = newInfoThisTurn || Info.updateGlobalLocation('r', aintViewR, directionForPreviousRound);
+		newInfoThisTurn = Info.updateGlobalLocation('r', aintViewR, directionForPreviousRound) || newInfoThisTurn;
 		
 		/*
 		 * If both players see their exit, activate endGameStrategy
 		 */
-		if (seeLeftExit && seeRightExit && !Info.endGameStrategy && newInfoThisTurn){
-			if(!leftExitPath){
-				AStar_Single astar = new AStar_Single(Info.currLX, Info.currLY, exitL.x, exitL.y, Info.GlobalViewL);
-				Node_Single node = astar.findPath();
-				leftExitPath = node != null;
-			}
-			if(!rightExitPath){
-				AStar_Single astar = new AStar_Single(Info.currRX, Info.currRY, exitR.x, exitR.y, Info.GlobalViewR);
-				Node_Single node = astar.findPath();
-				rightExitPath = node != null;
-			}
+		if(seeLeftExit && !leftExitPath){
+			AStar_Single astar = new AStar_Single(Info.currLX, Info.currLY, exitL.x, exitL.y, Info.GlobalViewL);
+			Node_Single node = astar.findPath();
+			leftExitPath = node != null;
+		}
+		if(seeRightExit && !rightExitPath){
+			AStar_Single astar = new AStar_Single(Info.currRX, Info.currRY, exitR.x, exitR.y, Info.GlobalViewR);
+			Node_Single node = astar.findPath();
+			rightExitPath = node != null;
+		}
+		if (seeLeftExit && seeRightExit && !Info.endGameStrategy){
 			if(leftExitPath && rightExitPath){
-				if (Config.DEBUG) System.out.println("Time for A*");
-				Node startPlayerPositionL = new Node(Info.currLX, Info.currLY);
-				Node startPlayerPositionR = new Node(Info.currRX, Info.currRY);
 				
-				starTester = new AStar_2(startPlayerPositionL.getX(), startPlayerPositionL.getY(), 
-						startPlayerPositionR.getX(), startPlayerPositionR.getY(), Info.GlobalViewL, Info.GlobalViewR);
+				if((ex.leftFinished && ex.rightFinished) || (ex.turns % 30 == 0 && newInfoThisTurn)) {
+					System.out.println("Time for A*");
+					Node startPlayerPositionL = new Node(Info.currLX, Info.currLY);
+					Node startPlayerPositionR = new Node(Info.currRX, Info.currRY);
+					
+					starTester = new AStar_2(startPlayerPositionL.getX(), startPlayerPositionL.getY(), 
+							startPlayerPositionR.getX(), startPlayerPositionR.getY(), Info.GlobalViewL, Info.GlobalViewR);
+					
+					
+					starTester.setExit1(exitL.getX(), exitL.getY());
+					starTester.setExit2(exitR.getX(), exitR.getY());
+					
+					path = starTester.findPath();
+				}
 				
-				
-				starTester.setExit1(exitL.getX(), exitL.getY());
-				starTester.setExit2(exitR.getX(), exitR.getY());
-				
-				path = starTester.findPath();
-				if(minMovesOut == 0 || (ex.leftFinished && ex.rightFinished))
+				if((ex.leftFinished && ex.rightFinished) || minMovesOut == 0){
 					Info.activateEndGameStrategy();
+				}
 				
 			}
 		}
@@ -83,10 +90,10 @@ public class Mirrim2 implements Player {
 		if (Info.endGameStrategy){
 
 				// TODO Follow path
-				if (Config.DEBUG) System.out.print("Following Path by A*  Direction = ");
+			if (Config.DEBUG) System.out.print("Following Path by A*  Direction = ");
 				directionForThisRound = path.remove(0);
 				directionForPreviousRound = directionForThisRound;
-				System.out.println(directionForThisRound);
+				if (Config.DEBUG) System.out.println(directionForThisRound);
 				return directionForThisRound;
 			
 		}
@@ -95,11 +102,13 @@ public class Mirrim2 implements Player {
 			if (Config.DEBUG) System.out.println("General Exploration Strategy");
 			directionForThisRound = ex.explore(aintViewL, aintViewR, directionForPreviousRound);
 		}
-			
+		
+		//TODO have these return bools for if each player moved
 		Info.updateRelativeLocation('l', directionForThisRound);
 		Info.updateRelativeLocation('r', directionForThisRound);
 		
 		directionForPreviousRound = directionForThisRound;
+		Info.addToListOfAllMoves(directionForThisRound);
 		return directionForThisRound;	
 	}
 	

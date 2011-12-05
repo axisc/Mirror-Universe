@@ -59,7 +59,7 @@ public class AStar_2 {
 		closed = new ArrayList<Node_2>();
 		nodesToPutOff = new ArrayList<Node_2>();
 		if(debugging){
-			prettyPrint(root);
+			if (Config.DEBUG) prettyPrint(root);
 		}
 		increase = false;
 	}
@@ -123,7 +123,7 @@ public class AStar_2 {
 			PriorityQueue<Node_2> tempQ = new PriorityQueue<Node_2>(nodesToPutOff);
 			queue = tempQ;
 			if (queue.isEmpty()) {
-				System.out.println("Increasing limit");
+				if (Config.DEBUG) System.out.println("Increasing limit");
 				maxNodes *= 2;
 				Node_2.resetDegree();
 				Node_2.reRunHeuristic(closed);
@@ -152,7 +152,7 @@ public class AStar_2 {
 				//queue.clear();
 				break;
 			}
-			if (debugging) {
+			if (Config.DEBUG) {
 				System.out.println(numAdded + " " + queue.size());
 				//System.out.println("Expanding:" + queue.peek().getValue());
 				System.out.println("Looking at:");
@@ -166,17 +166,17 @@ public class AStar_2 {
 			ArrayList<Node_2> nexts = successors(queue.poll());
 			queue.addAll(nexts);
 		}
-		System.out.println("Done");
+		if (Config.DEBUG) System.out.println("Done");
 		if(queue.isEmpty()){
 			numAdded = 0;
-			System.out.println("Empty :(");
+			if (Config.DEBUG) System.out.println("Empty :(");
 			increase = true;
 			exitsFound();
 			return findPath();
 		} else {
-			System.out.println("Found :)");
-			System.out.println(queue.peek());
-			System.out.println(queue.peek().getActionPath());
+			if (Config.DEBUG) System.out.println("Found :)");
+			if (Config.DEBUG) System.out.println(queue.peek());
+			if (Config.DEBUG) System.out.println(queue.peek().getActionPath());
 			Mirrim2.minMovesOut = queue.peek().getSelfDegree();
 			return queue.peek().getActionPath();
 		}
@@ -287,10 +287,10 @@ public class AStar_2 {
 									System.out.print(map2[n.getY2() + y][n.getX2() + x] + " ");
 								}
 							}
-							System.out.println();
+							if (Config.DEBUG) System.out.println();
 						}
 					}
-					if(map1[y1][x1] == -5 || map2[y2][x2] == -5){
+					if(map1[y1][x1] == 4 || map2[y2][x2] == 4){
 						++action;
 						continue;
 					}
@@ -298,14 +298,14 @@ public class AStar_2 {
 				Node_2 toAdd = new Node_2(x1, y1, x2, y2, n, indexOfAction[action]);
 				//Node_2.addPathCost(toAdd, 1, map1, map2);
 				if(x1 == 56 && y1 == 103 && x2 == 125 && y2 == 126){
-					System.out.println();
+					if (Config.DEBUG) System.out.println();
 				}
 				if(!n.equals(toAdd) && shouldIAdd(toAdd)){
 					nexts.add(toAdd);
 					++numAdded;
 					if(debugging){
-						System.out.println(indexOfAction[action]);
-						prettyPrint(toAdd);
+						if (Config.DEBUG) System.out.println(indexOfAction[action]);
+						if (Config.DEBUG) prettyPrint(toAdd);
 					}
 				}
 				
