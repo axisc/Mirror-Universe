@@ -20,6 +20,7 @@ public class Mirrim2 implements Player {
 	Info myInfo;
 	ArrayList<Integer> allPrevMoves = new ArrayList<Integer>();
 	static int estimatedMinMoves = 0;
+	boolean totallyExploredExits = false;
 	
 	public void calculateMinMovesOut() {
 		boolean matchFound = false;
@@ -43,7 +44,7 @@ public class Mirrim2 implements Player {
 			}
 			estimatedMinMoves++;
 			iter++;
-			if(estimatedMinMoves >= 10)
+			if(estimatedMinMoves >= 1)
 				return;
 		}
 	}
@@ -107,7 +108,11 @@ public class Mirrim2 implements Player {
 		}
 		if (seeLeftExit && seeRightExit && !Info.endGameStrategy){
 			if(leftExitPath && rightExitPath){
-				calculateMinMovesOut();
+				if(!totallyExploredExits){
+					calculateMinMovesOut();
+					if(!(ex.leftExitTotallyExplored && ex.rightExitTotallyExplored))
+					totallyExploredExits = true;
+				}
 
 				if((ex.leftFinished && ex.rightFinished) || (ex.turns % 300 == 0 && newInfoThisTurn)) {
 					System.out.println("Time for A*");

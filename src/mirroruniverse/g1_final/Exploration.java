@@ -20,6 +20,8 @@ public class Exploration {
 	Node_NonExit nodeNonExit;
 	Node_Single nodeSingle;
 
+	boolean leftExitTotallyExplored = false;
+	boolean rightExitTotallyExplored = false;
 
 	boolean backtracking = false;
 
@@ -193,17 +195,21 @@ public class Exploration {
 
 	}
 
-	private boolean seenAllSquaresAround(int x, int y, int[][] global){
-		for(int i = -1; i <= 1; i++){
-			for(int j = 1; i <= 1; j++){
+	private Coord seenAllSquaresAround(int x, int y, int[][] global, char side){
+		int tolerance = 5;
+		Coord c;
+		for(int i = -1*tolerance ; i <= tolerance; i++){
+			for(int j = -1*tolerance; j <= tolerance; j++){
 				if(!(x + i < 0 || y + j < 0 || x + i >= global[0].length || j >= global.length)){
-					if(global[y + j][x + i] != 4){
-						return false;
+					if(side == 'l' && lALPossiblyConnecting.contains((c = new Coord(i + x, j + y, 'l')))){
+						return c;
 					}
+					else if(side == 'r' && rALPossiblyConnecting.contains((c = new Coord(i + x, j + y, 'r'))))
+						return c;
 				}
 			}
 		}
-		return true;
+		return null;
 	}
 
 
@@ -244,10 +250,8 @@ public class Exploration {
 		int i = 0;
 		int j = 0;
 		int mynext = 0;
-		//if have to find a new path
-		//		if(target == null){
-		//			backtracking = false;
-		//		}
+		
+		
 		if(target == null || !(lALPossiblyConnecting.contains(target) || rALPossiblyConnecting.contains(target))
 				|| nodeNumber >= actionPath.size() ){
 			Collections.sort(lALPossiblyConnecting);
@@ -338,6 +342,14 @@ public class Exploration {
 						actionPath = nodeSingle.getActionPath();
 					}
 					else{
+						if(Mirrim2.seeLeftExit && !leftExitTotallyExplored){
+							target = seenAllSquaresAround(Info.currLX, Info.currLY, Info.GlobalViewL, 'l');
+							if((leftExitTotallyExplored = target == null)) continue;
+						}
+						else if(Mirrim2.seeRightExit && !rightExitTotallyExplored){
+							target = seenAllSquaresAround(Info.currLX, Info.currLY, Info.GlobalViewR, 'r');
+							if((rightExitTotallyExplored = target == null)) continue;
+						}
 						nodeSingle = null;
 						AStar_NonExit s;
 						//set new path
