@@ -196,7 +196,7 @@ public class Exploration {
 		//if target is no longer possibly connecting, generate new target
 
 		//for debugging to a specific turn
-		if(turns > 60){
+		if(turns > 680){
 			int asdf = 5;
 			asdf++;
 		}
