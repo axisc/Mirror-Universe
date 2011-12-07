@@ -3,6 +3,7 @@ package mirroruniverse.g1_final;
 import java.util.ArrayList;
 
 import mirroruniverse.g1_final.AStar_2;
+import mirroruniverse.sim.MUMap;
 import mirroruniverse.sim.Player;
 
 public class Mirrim2 implements Player {
@@ -18,6 +19,51 @@ public class Mirrim2 implements Player {
 	Exploration ex;
 	Info myInfo;
 	ArrayList<Integer> allPrevMoves = new ArrayList<Integer>();
+	static int estimatedMinMoves = 0;
+	
+	public void calculateMinMovesOut() {
+		boolean matchFound = false;
+		int moveL = -1;
+		int moveR = -1;
+		int iter = 0;
+		
+		while(!matchFound) {
+			for(int i = -1 ; i <= 1 ; i++) {
+				for(int j = -1; j <= 1; j++) {
+					if(Info.GlobalViewL[exitL.x + iter + i][exitL.y + j+ iter] == 0 
+							&& Info.GlobalViewR[exitR.x + i + iter ][exitR.y + j + iter] == 0) {
+						moveL = convertToOppDirection(i,j);
+						moveR = convertToOppDirection(i,j);
+					}
+					if(moveL == moveR && moveR != -1) {
+						matchFound = true;
+						return;
+					}
+				}
+			}
+			estimatedMinMoves++;
+			iter++;
+			if(estimatedMinMoves >= 50)
+				break;
+		}
+	}
+	
+	public static int convertToOppDirection(int i, int j) {
+		int move = 0;
+		
+		for(int x = 0; x < MUMap.aintDToM.length; x++) {
+			if(MUMap.aintDToM[x][0] == i && MUMap.aintDToM[x][1] == j) {
+				if (x == 0)
+					continue;
+				else if(x < 5)
+					move = x+4;
+				else
+					move = x-4;
+			}
+		}
+		
+		return move;
+	}
 
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
@@ -61,8 +107,9 @@ public class Mirrim2 implements Player {
 		}
 		if (seeLeftExit && seeRightExit && !Info.endGameStrategy){
 			if(leftExitPath && rightExitPath){
+				calculateMinMovesOut();
 
-				if((ex.leftFinished && ex.rightFinished) || (ex.turns % 30 == 0 && newInfoThisTurn)) {
+				if((ex.leftFinished && ex.rightFinished) || (ex.turns % 300 == 0 && newInfoThisTurn)) {
 					System.out.println("Time for A*");
 					Node startPlayerPositionL = new Node(Info.currLX, Info.currLY);
 					Node startPlayerPositionR = new Node(Info.currRX, Info.currRY);
@@ -77,8 +124,10 @@ public class Mirrim2 implements Player {
 					path = starTester.findPath();
 				}
 
-				if((ex.leftFinished && ex.rightFinished) || minMovesOut == 0){
+				
+				if((ex.leftFinished && ex.rightFinished) || minMovesOut <= estimatedMinMoves ){
 					Info.activateEndGameStrategy();
+					System.out.println("estimated min moves out:" + estimatedMinMoves);
 				}
 
 			}
