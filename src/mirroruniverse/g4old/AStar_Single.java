@@ -1,4 +1,4 @@
-package mirroruniverse.g4;
+package mirroruniverse.g4old;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -10,8 +10,6 @@ public class AStar_Single {
 	PriorityQueue<Node_Single> queue;
 	ArrayList<Node_Single> closed;
 	public boolean debugging = false;
-	private int maxNodes = Integer.MAX_VALUE;
-	private int nodesExpanded;
 	
 	public AStar_Single(int initialX, int initialY, int exitX, int exitY, int[][] kb){
 		root = new Node_Single(initialX, initialY, exitX, exitY);
@@ -20,12 +18,8 @@ public class AStar_Single {
 		queue = new PriorityQueue<Node_Single>();
 		queue.add(root);
 		closed = new ArrayList<Node_Single>();
-		nodesExpanded = 0;
 	}
 	
-	public void setMaxNodes(int n){
-		maxNodes = n;
-	}
 	/*public void exitsFound(){
 		if (increase) {
 			Node_Single.incDegree();
@@ -54,10 +48,6 @@ public class AStar_Single {
 	
 	public Node_Single findPath(){
 		while(!queue.isEmpty() && queue.peek().getValue() != queue.peek().getDepth()){
-			if(nodesExpanded > maxNodes){
-				queue.clear();
-				break;
-			}
 			ArrayList<Node_Single> nexts = successors(queue.poll());
 			queue.addAll(nexts);
 		}
@@ -75,7 +65,6 @@ public class AStar_Single {
 	
 	// Will generate the possible next moves 
 	private ArrayList<Node_Single> successors(Node_Single n){
-		++nodesExpanded;
 		closed.add(n);
 		int x1;
 		int y1;

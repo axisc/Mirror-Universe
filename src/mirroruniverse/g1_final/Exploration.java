@@ -83,35 +83,32 @@ public class Exploration {
 
 		else return true;
 	}
-<<<<<<< HEAD
+
 	
-	/*
-	 * Implements a random Move.Making sure 
-	 * that a 0 move is not returned. 
-	 * Also ensures that a legal move is 
-	 * returned.
-	 */
-	public static int randomMove (){
-
-		Random rdmTemp = new Random();
-		int d=0;
-		int nextX =0 ,nextY = 0;
-
-		do{
-			nextX = rdmTemp.nextInt(3);
-			nextY = rdmTemp.nextInt(3);
-
-			d = MUMap.aintMToD[nextX][nextY];
-		} while (d==0 && isMoveLegal(d) );
-
-		System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
-				+ MUMap.aintDToM[d][1]);
-		return d;
-
-	}
-=======
-
->>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
+//	/*
+//	 * Implements a random Move.Making sure 
+//	 * that a 0 move is not returned. 
+//	 * Also ensures that a legal move is 
+//	 * returned.
+//	 */
+//	public static int randomMove (){
+//
+//		Random rdmTemp = new Random();
+//		int d=0;
+//		int nextX =0 ,nextY = 0;
+//
+//		do{
+//			nextX = rdmTemp.nextInt(3);
+//			nextY = rdmTemp.nextInt(3);
+//
+//			d = MUMap.aintMToD[nextX][nextY];
+//		} while (d==0 && isMoveLegal(d) );
+//
+//		System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
+//				+ MUMap.aintDToM[d][1]);
+//		return d;
+//
+//	}
 
 	/*
 	 * Look at view from each player and determine which are the newly explored squares
@@ -402,9 +399,7 @@ public class Exploration {
 		return rightFinished;
 	}
 
-<<<<<<< HEAD
-	
-=======
+
 	private void chooseRightSide(int j){
 		target = rALPossiblyConnecting.get(j);
 		mymap = Info.GlobalViewR;
@@ -440,7 +435,6 @@ public class Exploration {
 
 
 
->>>>>>> f90a08cc507391158d93f918be2248d2ca08e7f0
 	/*
 	 * TODO
 	 * Add more functions for a more intelligent exploration strategy. 
