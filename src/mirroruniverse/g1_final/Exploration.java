@@ -54,10 +54,7 @@ public class Exploration {
 
 	}
 
-	/*
-	 * Implements a random Move.Making sure 
-	 * that a 0 move is not returned. 
-	 */
+	
 
 	public boolean isMoveLegal(int direction){
 		boolean retValue =  true;
@@ -87,6 +84,31 @@ public class Exploration {
 		else return true;
 	}
 
+	
+//	/*
+//	 * Implements a random Move.Making sure 
+//	 * that a 0 move is not returned. 
+//	 * Also ensures that a legal move is 
+//	 * returned.
+//	 */
+//	public static int randomMove (){
+//
+//		Random rdmTemp = new Random();
+//		int d=0;
+//		int nextX =0 ,nextY = 0;
+//
+//		do{
+//			nextX = rdmTemp.nextInt(3);
+//			nextY = rdmTemp.nextInt(3);
+//
+//			d = MUMap.aintMToD[nextX][nextY];
+//		} while (d==0 && isMoveLegal(d) );
+//
+//		System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
+//				+ MUMap.aintDToM[d][1]);
+//		return d;
+//
+//	}
 
 	/*
 	 * Look at view from each player and determine which are the newly explored squares
@@ -376,6 +398,7 @@ public class Exploration {
 	public boolean isRightFinished() {
 		return rightFinished;
 	}
+
 
 	private void chooseRightSide(int j){
 		target = rALPossiblyConnecting.get(j);

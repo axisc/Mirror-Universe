@@ -1,4 +1,4 @@
-package mirroruniverse.g1_final;
+package mirroruniverse.g4old;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -10,8 +10,6 @@ public class AStar_Single {
 	PriorityQueue<Node_Single> queue;
 	ArrayList<Node_Single> closed;
 	public boolean debugging = false;
-	private int maxNodes = Integer.MAX_VALUE;
-	private int nodesExpanded;
 	
 	public AStar_Single(int initialX, int initialY, int exitX, int exitY, int[][] kb){
 		root = new Node_Single(initialX, initialY, exitX, exitY);
@@ -20,12 +18,8 @@ public class AStar_Single {
 		queue = new PriorityQueue<Node_Single>();
 		queue.add(root);
 		closed = new ArrayList<Node_Single>();
-		nodesExpanded = 0;
 	}
 	
-	public void setMaxNodes(int n){
-		maxNodes = n;
-	}
 	/*public void exitsFound(){
 		if (increase) {
 			Node_Single.incDegree();
@@ -51,72 +45,9 @@ public class AStar_Single {
 		increase = !increase;
 		//closed.clear();
 	}*/
-	public Node_Single findNonExitPath(){
-		while(!queue.isEmpty() && queue.peek().getValue() != queue.peek().getDepth()){
-			ArrayList<Node_Single> nexts = nonExitSuccessors(queue.poll());
-			queue.addAll(nexts);
-		}
-		//System.out.println("Done");
-		if(queue.isEmpty()){
-			//System.out.println("Empty :(");
-			//exitsFound();
-			return null;
-		} else {
-			//System.out.println("Found :)");
-			//System.out.println(queue.peek());
-			return queue.peek();
-		}
-	}
-
-	// Will generate the possible next moves 
-		private ArrayList<Node_Single> nonExitSuccessors(Node_Single n){
-			closed.add(n);
-			int x1;
-			int y1;
-			int action = 0;
-			//int[] indexOfAction = {6,5,4,7,0,3,8,1,2};
-			int[] indexOfAction = {4,5,6,3,0,7,2,1,8};
-			ArrayList<Node_Single> nexts = new ArrayList<Node_Single>();
-
-			for(int xChange = -1; xChange < 2; ++xChange){
-				for(int yChange = -1; yChange < 2; ++yChange){
-
-					// Dont want to add the current Node_Single to the path
-					if(xChange == 0 && yChange == 0){
-						++action;
-						continue;
-					}
-
-					x1 = n.getX1() + xChange;
-					y1 = n.getY1() + yChange;
-
-					try {
-						if (map[y1][x1] == 1 || map[y1][x1] == 4 || map[y1][x1] == 2) {
-							x1 -= xChange;
-							y1 -= yChange;
-						}
-					} catch (ArrayIndexOutOfBoundsException e) {
-						x1 -= xChange;
-						y1 -= yChange;
-					}
-					Node_Single toAdd = new Node_Single(x1, y1, n, indexOfAction[action]);
-
-					if(!n.equals(toAdd) && shouldIAdd(toAdd)){
-						nexts.add(toAdd);
-					}
-					++action;
-				}
-			}
-
-			return nexts;
-		}
-
+	
 	public Node_Single findPath(){
 		while(!queue.isEmpty() && queue.peek().getValue() != queue.peek().getDepth()){
-			if(nodesExpanded > maxNodes){
-				queue.clear();
-				break;
-			}
 			ArrayList<Node_Single> nexts = successors(queue.poll());
 			queue.addAll(nexts);
 		}
@@ -134,7 +65,6 @@ public class AStar_Single {
 	
 	// Will generate the possible next moves 
 	private ArrayList<Node_Single> successors(Node_Single n){
-		++nodesExpanded;
 		closed.add(n);
 		int x1;
 		int y1;

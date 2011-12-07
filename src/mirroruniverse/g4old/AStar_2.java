@@ -1,4 +1,4 @@
-package mirroruniverse.g1_final;
+package mirroruniverse.g4old;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -17,7 +17,6 @@ public class AStar_2 {
 	private boolean increase;
 	private boolean addedToDegree = false;
 	private static boolean goNextToExit = false;
-	private static int nextToVal;
 	
 	private int numAdded = 0;
 	
@@ -63,19 +62,10 @@ public class AStar_2 {
 			prettyPrint(root);
 		}
 		increase = false;
-		nextToVal = 3;
-	}
-	
-	public static void setNextToVal(int n){
-		nextToVal = n;
 	}
 	
 	public static void invertGoNextToExit(){
 		goNextToExit = !goNextToExit;
-	}
-	
-	public static void setGoNextToExit(boolean b){
-		goNextToExit = b;
 	}
 	
 	public void setExit1(int x, int y){
@@ -152,47 +142,13 @@ public class AStar_2 {
 		//closed.clear();
 	}
 	
-	public Node_2 findZeroPath(){
-		if(!exitTogether()){
-			return null;
-		}
-		if(!closed.isEmpty()){
-			queue.addAll(closed);
-		}
-		while(!queue.isEmpty() && queue.peek().getValue() != 0 && !queue.peek().closeEnough()){
-			if(numAdded > maxNodes){
-				queue.clear();
-				break;
-			}
-			if(queue.peek().getValue() > 10000){
-				nodesToPutOff.add(queue.poll());
-				continue;
-			}
-			ArrayList<Node_2> nexts = successors(queue.poll());
-			queue.addAll(nexts);
-		}
-		Node_2 toReturn = null;
-		if(!queue.isEmpty()){
-			toReturn = queue.poll();
-		}
-		queue.clear();
-		return toReturn;
-	}
-	
-	public ArrayList<Integer> startFinding(){
-		if(!closed.isEmpty()){
-			queue.addAll(closed);
-		}
-		return findPath();
-	}
-	
 	public ArrayList<Integer> findPath(){
 		while(!queue.isEmpty() && queue.peek().getValue() != 0 && !queue.peek().closeEnough()){
 			if(numAdded > maxNodes){
 				queue.clear();
 				break;
 			}
-			if(goNextToExit && queue.peek().getRealValue() == nextToVal && !(queue.peek().getP1HasReached() || queue.peek().getP2HasReached())){
+			if(goNextToExit && queue.peek().getRealValue() == 2){
 				//queue.clear();
 				break;
 			}
@@ -221,8 +177,6 @@ public class AStar_2 {
 			System.out.println("Found :)");
 			System.out.println(queue.peek());
 			System.out.println(queue.peek().getActionPath());
-			closed.clear();
-			nodesToPutOff.clear();
 			return queue.peek().getActionPath();
 		}
 	}
@@ -315,6 +269,26 @@ public class AStar_2 {
 					y2 = n.getY2();
 				}
 				try {
+					if(x1 == 55 && y1 == 104){
+						for(int y = -5; y < 6; ++y){
+							for(int x = -5; x < 6; ++x){
+								if(x == 0 && y == 0){
+									System.out.print("* ");
+								} else {
+									System.out.print(map1[n.getY1() + y][n.getX1() + x] + " ");
+								}
+							}
+							System.out.print("\t");
+							for(int x = -5; x < 6; ++x){
+								if(x == 0 && y == 0){
+									System.out.print("* ");
+								} else {
+									System.out.print(map2[n.getY2() + y][n.getX2() + x] + " ");
+								}
+							}
+							System.out.println();
+						}
+					}
 					if(map1[y1][x1] == -5 || map2[y2][x2] == -5){
 						++action;
 						continue;

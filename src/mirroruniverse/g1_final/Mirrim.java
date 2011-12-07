@@ -10,7 +10,7 @@ import mirroruniverse.g1_final.Config;
 import mirroruniverse.g1_final.Node;
 import mirroruniverse.sim.MUMap;
 import mirroruniverse.sim.Player;
-import mirroruniverse.g4.*;
+import mirroruniverse.g4old.*;
 
 public class Mirrim implements Player {
 

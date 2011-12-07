@@ -1,4 +1,4 @@
-package mirroruniverse.g4;
+package mirroruniverse.g4old;
 
 import java.util.Random;
 
