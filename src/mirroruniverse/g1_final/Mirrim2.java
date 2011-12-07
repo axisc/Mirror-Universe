@@ -43,7 +43,7 @@ public class Mirrim2 implements Player {
 			}
 			estimatedMinMoves++;
 			iter++;
-			if(estimatedMinMoves >= 50)
+			if(estimatedMinMoves >= 10)
 				return;
 		}
 	}
